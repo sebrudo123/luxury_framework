@@ -1,11 +1,11 @@
 {
-  "version": "1.3.2",
+  "version": "1.3.3",
   "releaseDate": "2026-11-23",
-  "changelog": "Descarga e instalación automática de cfxlua-require y require con luxury_update, sincronización en vivo de todos los scripts actualizados, provisión nativa de require/es_extended/qb-core/qbx_core en el core, y reinicio automático ordenado.",
+  "changelog": "Ejecución automática e instantánea de migraciones SQL (player_vehicles y jg-advancedgarages v4) al invocar luxury_update en txAdmin, auto-creación de tablas e interiores, e instalación directa de cfxlua-require.",
   "resources": {
     "cfxlua-require": "1.0.2",
     "require": "1.0.2",
-    "luxury_core": "1.3.2",
+    "luxury_core": "1.3.3",
     "luxury_lib": "1.3.0",
     "es_extended": "1.3.0",
     "qb-core": "1.3.0",

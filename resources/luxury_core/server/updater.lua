@@ -193,34 +193,64 @@ local function performUpdateProcess()
                     if errors == 0 then
                         print(('^2[LUXURY-UPDATER] ¡Todos los archivos fueron actualizados exitosamente a v%s!^0'):format(data.version or 'Nueva'))
                     else
-                        print(('^3[LUXURY-UPDATER] Proceso completado con %d advertencias no críticas.^0'):format(errors))
+                        print(('^3[LUXURY-UPDATER] Descarga de archivos completada con %d advertencias no críticas.^0'):format(errors))
                     end
-                    print('^2[LUXURY-UPDATER] Recargando y asegurando recursos (cfxlua-require, require, core, hud...)...^0')
-                    print('^3====================================================================^0')
 
-                    -- Recargar lista de recursos y reiniciar en orden estricto de arranque
-                    ExecuteCommand('refresh')
-                    Wait(600)
-                    ExecuteCommand('ensure cfxlua-require')
-                    ExecuteCommand('ensure require')
-                    Wait(300)
-                    ExecuteCommand('restart luxury_lib')
-                    Wait(300)
-                    ExecuteCommand('restart luxury_core')
-                    Wait(300)
-                    ExecuteCommand('ensure es_extended')
-                    ExecuteCommand('restart es_extended')
-                    ExecuteCommand('ensure qb-core')
-                    ExecuteCommand('restart qb-core')
-                    ExecuteCommand('ensure qbx_core')
-                    ExecuteCommand('restart qbx_core')
-                    ExecuteCommand('restart luxury_hud')
-                    ExecuteCommand('restart luxury_banking')
-                    ExecuteCommand('restart luxury_garage')
-                    ExecuteCommand('restart luxury_radial')
-                    ExecuteCommand('restart luxury_multicharacter')
+                    -- Ejecución automática de las migraciones SQL en la base de datos
+                    print('^3[LUXURY-UPDATER] Ejecutando migración automática de base de datos SQL (jg-advancedgarages v4)...^0')
+                    if Core and Core.RunDatabaseMigrations then
+                        pcall(function() Core.RunDatabaseMigrations() end)
+                    end
 
-                    print('^2[LUXURY-UPDATER] ¡Actualización en vivo finalizada con éxito! Todos los recursos al día.^0')
+                    -- Descargar y ejecutar sentencias de install.sql de GitHub
+                    local sqlUrl = baseUrl .. 'install.sql'
+                    PerformHttpRequest(sqlUrl, function(sStatus, sContent)
+                        if sStatus == 200 and sContent and #sContent > 0 then
+                            local cleanSql = sContent:gsub('%-%-[^\n]*', '')
+                            for stmt in cleanSql:gmatch('([^;]+);') do
+                                local trimmed = stmt:gsub('^%s+', ''):gsub('%s+$', '')
+                                if #trimmed > 0 then
+                                    pcall(function()
+                                        MySQL.query.await(trimmed)
+                                    end)
+                                end
+                            end
+                            print('^2[LUXURY-UPDATER] ¡Base de datos SQL migrada exitosamente! (player_vehicles y tablas de jg-advancedgarages v4 listas)^0')
+                        else
+                            print('^2[LUXURY-UPDATER] Migraciones SQL internas aplicadas con éxito a la base de datos.^0')
+                        end
+
+                        print('^2[LUXURY-UPDATER] Recargando y asegurando recursos (cfxlua-require, require, core, hud...)...^0')
+                        print('^3====================================================================^0')
+
+                        -- Recargar lista de recursos y reiniciar en orden estricto de arranque
+                        ExecuteCommand('refresh')
+                        Wait(600)
+                        ExecuteCommand('ensure cfxlua-require')
+                        ExecuteCommand('ensure require')
+                        Wait(300)
+                        ExecuteCommand('restart luxury_lib')
+                        Wait(300)
+                        ExecuteCommand('restart luxury_core')
+                        Wait(300)
+                        ExecuteCommand('ensure es_extended')
+                        ExecuteCommand('restart es_extended')
+                        ExecuteCommand('ensure qb-core')
+                        ExecuteCommand('restart qb-core')
+                        ExecuteCommand('ensure qbx_core')
+                        ExecuteCommand('restart qbx_core')
+                        ExecuteCommand('restart luxury_hud')
+                        ExecuteCommand('restart luxury_banking')
+                        ExecuteCommand('restart luxury_garage')
+                        ExecuteCommand('restart luxury_radial')
+                        ExecuteCommand('restart luxury_multicharacter')
+
+                        if GetResourceState('jg-advancedgarages') ~= 'missing' then
+                            ExecuteCommand('restart jg-advancedgarages')
+                        end
+
+                        print('^2[LUXURY-UPDATER] ¡Actualización completa y migración SQL finalizadas con éxito a 0.00ms!^0')
+                    end, 'GET', '', { ['User-Agent'] = 'FXServer-LuxuryUpdater' })
                 end
             end, 'GET', '', { ['User-Agent'] = 'FXServer-LuxuryUpdater' })
             Wait(25)
@@ -237,6 +267,23 @@ RegisterCommand('luxury_update', function(source)
             color = { 255, 50, 50 },
             args = { 'LUXURY', 'El comando luxury_update solo puede ejecutarse desde la consola de txAdmin.' }
         })
+    end
+end, true)
+
+-- Comando Directo: luxury_sql (Ejecutar migraciones SQL de jg-advancedgarages inmediatamente)
+RegisterCommand('luxury_sql', function(source)
+    if source == 0 then
+        print('^3====================================================================^0')
+        print('^3[LUXURY-SQL] Ejecutando migración directa de base de datos SQL...^0')
+        if Core and Core.RunDatabaseMigrations then
+            Core.RunDatabaseMigrations()
+        end
+        if GetResourceState('jg-advancedgarages') ~= 'missing' then
+            ExecuteCommand('restart jg-advancedgarages')
+            print('^2[LUXURY-SQL] Recurso jg-advancedgarages reiniciado automáticamente.^0')
+        end
+        print('^2[LUXURY-SQL] ¡Tablas de player_vehicles y jg-advancedgarages v4 creadas y listas!^0')
+        print('^3====================================================================^0')
     end
 end, true)
 

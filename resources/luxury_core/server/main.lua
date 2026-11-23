@@ -5,7 +5,7 @@ Core.Players = Core.Players or {}
 ---------------------------------------------------------------------
 -- Base de Datos: Inicialización y Migración Automática Completa
 ---------------------------------------------------------------------
-CreateThread(function()
+function Core.RunDatabaseMigrations()
     -- 1) Tabla de Jugadores y Personajes (luxury_players con soporte Multi-Character)
     MySQL.query.await([[
         CREATE TABLE IF NOT EXISTS `luxury_players` (
@@ -328,6 +328,13 @@ CreateThread(function()
         );
     ]])
     print('^5[LUXURY-DATABASE]^7 Tablas e interiores de ^3jg-advancedgarages v4^7 verificadas y listas.')
+    return true
+end
+
+exports('RunDatabaseMigrations', Core.RunDatabaseMigrations)
+
+CreateThread(function()
+    Core.RunDatabaseMigrations()
 
     -- Presentación del Banner Oficial
     if PrintLuxuryBanner then
