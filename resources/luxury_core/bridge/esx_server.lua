@@ -141,6 +141,37 @@ local function buildXPlayer(player)
         return player:hasItem(name, 1)
     end
 
+    function self.canCarryItem(name, count)
+        return true -- Compatible con el cálculo de peso de ox_inventory
+    end
+
+    function self.getWeight()
+        local weight = 0
+        local inv = player:getInventory() or {}
+        for _, item in pairs(inv) do
+            if item and item.weight and item.count then
+                weight = weight + (item.weight * item.count)
+            end
+        end
+        return weight
+    end
+
+    function self.getMaxWeight()
+        return 30000 -- 30kg estándar de inventario
+    end
+
+    function self.setInventoryItem(name, count)
+        local cur = player:getItem(name)
+        local curCount = cur and (cur.count or cur.amount or 0) or 0
+        local diff = (count or 0) - curCount
+        if diff > 0 then
+            return player:addItem(name, diff)
+        elseif diff < 0 then
+            return player:removeItem(name, math.abs(diff))
+        end
+        return true
+    end
+
     -- Métodos de Identidad y Coordenadas
     function self.getIdentifier()
         return player.license
@@ -231,6 +262,22 @@ end
 AddEventHandler('esx:getSharedObject', function(cb)
     cb(ESX)
 end)
+
+function ESX.GetConfig()
+    return {
+        EnableCustomInventory = true,
+        CustomInventory = 'ox',
+        DistanceGive = 4.0
+    }
+end
+
+function ESX.GetJobs()
+    return Jobs or {}
+end
+
+function ESX.GetItems()
+    return Items or {}
+end
 
 -- Exports compatibles con ESX
 exports('getSharedObject', function() return ESX end)

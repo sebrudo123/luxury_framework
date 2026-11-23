@@ -12,6 +12,13 @@ function ESX.GetPlayerData()
     return ESX.PlayerData
 end
 
+function ESX.GetConfig()
+    return {
+        EnableCustomInventory = true,
+        CustomInventory = 'ox'
+    }
+end
+
 function ESX.SetPlayerData(key, val)
     ESX.PlayerData[key] = val
 end
