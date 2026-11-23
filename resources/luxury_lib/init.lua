@@ -20,3 +20,7 @@ end)
 exports('GetTunnel', function()
     return Tunnel
 end)
+
+exports('GetVersion', function()
+    return '1.3.0'
+end)

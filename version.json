@@ -1,0 +1,79 @@
+{
+  "version": "1.3.0",
+  "releaseDate": "2026-11-23",
+  "changelog": "Puentes nativos para ESX (es_extended), QBCore (qb-core) y Qbox (qbx_core), corrección de cursor NUI en todos los scripts, HUD superior con distintivo NEW EMPIRE y sistema de auto-actualización en vivo vía comando txAdmin.",
+  "resources": {
+    "luxury_core": "1.3.0",
+    "luxury_lib": "1.3.0",
+    "es_extended": "1.3.0",
+    "qb-core": "1.3.0",
+    "qbx_core": "1.3.0",
+    "luxury_hud": "1.3.0",
+    "luxury_banking": "1.3.0",
+    "luxury_garage": "1.3.0",
+    "luxury_radial": "1.3.0",
+    "luxury_multicharacter": "1.3.0"
+  },
+  "files": {
+    "luxury_core": [
+      "fxmanifest.lua",
+      "server/main.lua",
+      "server/functions.lua",
+      "server/events.lua",
+      "server/player.lua",
+      "server/updater.lua",
+      "bridge/esx_server.lua",
+      "bridge/esx_client.lua",
+      "bridge/qb_server.lua",
+      "bridge/qb_client.lua",
+      "bridge/qbox.lua"
+    ],
+    "luxury_lib": [
+      "fxmanifest.lua",
+      "init.lua",
+      "client/callback.lua",
+      "server/callback.lua",
+      "client/notify.lua"
+    ],
+    "es_extended": [
+      "fxmanifest.lua",
+      "imports.lua",
+      "server.lua",
+      "client.lua"
+    ],
+    "qb-core": [
+      "fxmanifest.lua",
+      "import.lua",
+      "server.lua",
+      "client.lua"
+    ],
+    "qbx_core": [
+      "fxmanifest.lua",
+      "server.lua",
+      "client.lua"
+    ],
+    "luxury_hud": [
+      "config.lua",
+      "client/main.lua",
+      "html/index.html",
+      "html/style.css",
+      "html/script.js"
+    ],
+    "luxury_banking": [
+      "client/main.lua",
+      "html/style.css"
+    ],
+    "luxury_garage": [
+      "client/main.lua",
+      "html/style.css"
+    ],
+    "luxury_radial": [
+      "client/main.lua",
+      "html/style.css"
+    ],
+    "luxury_multicharacter": [
+      "client/main.lua",
+      "html/style.css"
+    ]
+  }
+}

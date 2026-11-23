@@ -5,7 +5,7 @@ lua54 'yes'
 name 'luxury_lib'
 description 'Librería utilitaria oficial para el ecosistema Luxury Framework'
 author 'Vertex Development'
-version '1.1.0'
+version '1.3.0'
 
 shared_scripts {
     'shared/math.lua',

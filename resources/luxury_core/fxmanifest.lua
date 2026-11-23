@@ -4,7 +4,7 @@ lua54 'yes'
 
 name 'luxury_core'
 description 'Framework base modular con arquitectura Qbox: Proxy/Tunnel, Gangs, Licencias, Buckets, blindaje Anti-Dump y Centinela Anti-Cheat'
-version '1.1.0'
+version '1.3.0'
 
 shared_scripts {
     'shared/proxy.lua',
@@ -37,6 +37,7 @@ server_scripts {
     'server/status.lua',
     'server/death.lua',
     'server/admin.lua',
+    'server/updater.lua',
     'bridge/esx_server.lua',
     'bridge/qb_server.lua',
     'bridge/qbox.lua',
@@ -92,6 +93,10 @@ exports {
     'getSharedObject',
     'GetSharedObject',
     'GetESX',
+
+    -- Auto-Updater
+    'CheckForUpdates',
+    'UpdateFramework',
 
     -- QBCore Compatibility
     'GetCoreObject',
