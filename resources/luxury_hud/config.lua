@@ -1,6 +1,9 @@
 -- luxury_hud: Configuración Abierta Origen HUD (Escrow Ignored)
 Config = Config or {}
 
+-- Nombre del Servidor / Marca visible en el HUD superior
+Config.ServerName = 'NEW EMPIRE'
+
 -- Diseño por defecto: 'circular' (Estilo Origen HUD clásico) o 'horizontal'
 Config.Layout = 'circular'
 

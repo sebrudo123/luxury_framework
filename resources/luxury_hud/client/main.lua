@@ -114,6 +114,7 @@ end, false)
 RegisterCommand(Config.SettingsCommand or 'hud', function()
     isSettingsOpen = true
     SetNuiFocus(true, true)
+    SetCursorLocation(0.5, 0.5)
     SendNUIMessage({
         action = 'OPEN_SETTINGS'
     })
@@ -198,6 +199,10 @@ CreateThread(function()
                             range = voiceRange,
                             talking = isTalking,
                             radio = isRadio
+                        },
+                        server = {
+                            name = Config.ServerName or 'NEW EMPIRE',
+                            id = GetPlayerServerId(PlayerId())
                         },
                         location = {
                             street = (crossName ~= '' and (streetName .. ' / ' .. crossName) or streetName),

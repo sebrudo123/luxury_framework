@@ -200,6 +200,7 @@ RegisterNetEvent('luxury_garage:client:openMenu', function(data)
     isMenuOpen = true
     hideTextUI()
     SetNuiFocus(true, true)
+    SetCursorLocation(0.5, 0.5)
     SendNUIMessage({
         action = 'OPEN_GARAGE',
         payload = data

@@ -14,6 +14,7 @@ RegisterCommand('openRadialMenu', function()
 
     isRadialOpen = true
     SetNuiFocus(true, true)
+    SetCursorLocation(0.5, 0.5)
     SendNUIMessage({
         action = 'OPEN_RADIAL',
         payload = {

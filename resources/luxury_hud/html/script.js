@@ -126,11 +126,16 @@
     document.getElementById('vdot-2').className = `vdot ${range >= 2 ? 'on' : ''}`;
     document.getElementById('vdot-3').className = `vdot ${range >= 3 ? 'on' : ''}`;
 
-    // Brújula y Calle
+    // Brújula, Servidor y Calle
     const loc = s.location || {};
+    const srv = s.server || {};
     const streetBar = document.getElementById('origen-street-bar');
     if (state.settings.compass && !state.cinematic) {
       streetBar.style.display = 'flex';
+      const srvEl = document.getElementById('txt-server-name');
+      if (srvEl && srv.name) srvEl.textContent = srv.name;
+      const idEl = document.getElementById('txt-player-id');
+      if (idEl && srv.id !== undefined) idEl.textContent = srv.id;
       document.getElementById('txt-cardinal').textContent = loc.cardinal || 'N';
       document.getElementById('txt-heading').textContent = `${loc.heading || 0}°`;
       document.getElementById('txt-street-name').textContent = loc.street || 'LOS SANTOS';

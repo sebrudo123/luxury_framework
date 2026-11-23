@@ -56,6 +56,7 @@ RegisterNetEvent('luxury_multicharacter:client:setupUI', function(characters, ma
     setupCamera()
 
     SetNuiFocus(true, true)
+    SetCursorLocation(0.5, 0.5)
     SendNUIMessage({
         action = 'OPEN_MULTICHAR',
         payload = {

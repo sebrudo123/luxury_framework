@@ -32,13 +32,18 @@
   user-select: none;
 }
 
-body {
+html, body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
   background: transparent;
   font-family: 'Plus Jakarta Sans', sans-serif;
   color: var(--text-main);
+  cursor: default !important;
+}
+
+button, input, select, textarea, [role="button"], .char-slot-card, .btn-action {
+  cursor: pointer !important;
 }
 
 /* Contenedor Raíz (Centro y derecha libres para ver el personaje 3D) */
