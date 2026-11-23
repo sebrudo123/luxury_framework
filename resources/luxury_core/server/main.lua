@@ -116,6 +116,219 @@ CreateThread(function()
     end
     print('^5[LUXURY-DATABASE]^7 Tabla ^3`luxury_societies`^7 verificada y lista para producción.')
 
+    -- 5) Compatibilidad completa con jg-advancedgarages v4 y player_vehicles
+    MySQL.query.await([[
+        CREATE TABLE IF NOT EXISTS `player_vehicles` (
+            `id` INT(11) NOT NULL AUTO_INCREMENT,
+            `license` VARCHAR(50) DEFAULT NULL,
+            `citizenid` VARCHAR(50) DEFAULT NULL,
+            `vehicle` VARCHAR(50) DEFAULT NULL,
+            `hash` VARCHAR(50) DEFAULT NULL,
+            `mods` LONGTEXT DEFAULT NULL,
+            `plate` VARCHAR(15) NOT NULL,
+            `fakeplate` VARCHAR(50) DEFAULT NULL,
+            `garage` VARCHAR(50) DEFAULT 'Legion Square',
+            `fuel` INT(11) DEFAULT 100,
+            `engine` FLOAT DEFAULT 1000,
+            `body` FLOAT DEFAULT 1000,
+            `state` INT(11) DEFAULT 1,
+            `depotprice` INT(11) NOT NULL DEFAULT 0,
+            `drivingdistance` INT(50) DEFAULT NULL,
+            `status` TEXT DEFAULT NULL,
+            `balance` INT(11) NOT NULL DEFAULT 0,
+            `paymentamount` INT(11) NOT NULL DEFAULT 0,
+            `paymentsleft` INT(11) NOT NULL DEFAULT 0,
+            `financetime` INT(11) NOT NULL DEFAULT 0,
+            `damage` LONGTEXT DEFAULT '',
+            `in_garage` TINYINT(1) DEFAULT '1',
+            `garage_id` VARCHAR(255) DEFAULT 'Legion Square',
+            `job_vehicle` TINYINT(1) DEFAULT '0',
+            `job_vehicle_rank` INT(10) DEFAULT '0',
+            `gang_vehicle` TINYINT(1) DEFAULT '0',
+            `gang_vehicle_rank` INT(10) DEFAULT '0',
+            `impound` INT(10) DEFAULT '0',
+            `impound_retrievable` INT(10) DEFAULT '0',
+            `impound_data` LONGTEXT DEFAULT '',
+            `nickname` VARCHAR(255) DEFAULT '',
+            `favourite` TINYINT(1) DEFAULT '0',
+            `admin_blocked` TINYINT(1) DEFAULT '0',
+            `admin_block_reason` LONGTEXT DEFAULT '',
+            `admin_blocked_by` VARCHAR(255) DEFAULT '',
+            `admin_blocked_at` DATETIME DEFAULT NULL,
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `uk_player_veh_plate` (`plate`),
+            KEY `idx_player_veh_citizenid` (`citizenid`),
+            KEY `idx_player_veh_license` (`license`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ]])
+
+    pcall(function()
+        MySQL.query.await([[
+            ALTER TABLE `player_vehicles` 
+            ADD COLUMN IF NOT EXISTS `damage` LONGTEXT DEFAULT '',
+            ADD COLUMN IF NOT EXISTS `in_garage` TINYINT(1) DEFAULT '1',
+            ADD COLUMN IF NOT EXISTS `garage_id` VARCHAR(255) DEFAULT 'Legion Square',
+            ADD COLUMN IF NOT EXISTS `job_vehicle` TINYINT(1) DEFAULT '0',
+            ADD COLUMN IF NOT EXISTS `job_vehicle_rank` INT(10) DEFAULT '0',
+            ADD COLUMN IF NOT EXISTS `gang_vehicle` TINYINT(1) DEFAULT '0',
+            ADD COLUMN IF NOT EXISTS `gang_vehicle_rank` INT(10) DEFAULT '0',
+            ADD COLUMN IF NOT EXISTS `impound` INT(10) DEFAULT '0',
+            ADD COLUMN IF NOT EXISTS `impound_retrievable` INT(10) DEFAULT '0',
+            ADD COLUMN IF NOT EXISTS `impound_data` LONGTEXT DEFAULT '',
+            ADD COLUMN IF NOT EXISTS `nickname` VARCHAR(255) DEFAULT '',
+            ADD COLUMN IF NOT EXISTS `favourite` TINYINT(1) DEFAULT '0',
+            ADD COLUMN IF NOT EXISTS `admin_blocked` TINYINT(1) DEFAULT '0',
+            ADD COLUMN IF NOT EXISTS `admin_block_reason` LONGTEXT DEFAULT '',
+            ADD COLUMN IF NOT EXISTS `admin_blocked_by` VARCHAR(255) DEFAULT '',
+            ADD COLUMN IF NOT EXISTS `admin_blocked_at` DATETIME DEFAULT NULL;
+        ]])
+    end)
+
+    -- Tablas complementarias de jg-advancedgarages v4
+    MySQL.query.await([[
+        CREATE TABLE IF NOT EXISTS `garage_interiors` (
+            `id` VARCHAR(255) NOT NULL,
+            `name` VARCHAR(255) NOT NULL,
+            `disabled` TINYINT(1) NOT NULL DEFAULT '0',
+            `entrance` LONGTEXT NOT NULL,
+            `entrance_interaction` LONGTEXT DEFAULT NULL,
+            `camera_cutscene` LONGTEXT NOT NULL,
+            `vehicle_positions` LONGTEXT NOT NULL,
+            `vehicle_exit_points` LONGTEXT DEFAULT NULL,
+            `ipl_profile` VARCHAR(255) DEFAULT NULL,
+            `ipl_config` LONGTEXT DEFAULT NULL,
+            `detected_interior_id` VARCHAR(255) DEFAULT NULL,
+            `is_default` TINYINT(1) NOT NULL DEFAULT '0',
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+        CREATE TABLE IF NOT EXISTS `garage_locations` (
+            `id` VARCHAR(255) NOT NULL,
+            `name` VARCHAR(255) NOT NULL,
+            `kind` VARCHAR(20) NOT NULL,
+            `restriction_type` VARCHAR(20) NOT NULL DEFAULT 'public',
+            `vehicle_type` VARCHAR(20) NOT NULL DEFAULT 'car',
+            `disabled` TINYINT(1) NOT NULL DEFAULT '0',
+            `map_position` LONGTEXT DEFAULT NULL,
+            `open_interactions` LONGTEXT NOT NULL,
+            `use_open_interactions_for_store` TINYINT(1) NOT NULL DEFAULT '1',
+            `store_interactions` LONGTEXT DEFAULT NULL,
+            `spawn_points` LONGTEXT DEFAULT NULL,
+            `blip` LONGTEXT DEFAULT NULL,
+            `markers` LONGTEXT DEFAULT NULL,
+            `distance` FLOAT DEFAULT '15',
+            `restriction_data` LONGTEXT DEFAULT NULL,
+            `vehicle_rules` LONGTEXT DEFAULT NULL,
+            `impound_options` LONGTEXT DEFAULT NULL,
+            `interior_id` VARCHAR(255) DEFAULT NULL,
+            `sale_options` LONGTEXT DEFAULT NULL,
+            `template_id` VARCHAR(255) DEFAULT NULL,
+            `purchased_by` VARCHAR(255) DEFAULT NULL,
+            `purchase_price` INT DEFAULT NULL,
+            `purchased_at` DATETIME DEFAULT NULL,
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            KEY `kind` (`kind`),
+            KEY `restriction_type` (`restriction_type`),
+            KEY `vehicle_type` (`vehicle_type`),
+            KEY `interior_id` (`interior_id`),
+            KEY `template_id` (`template_id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+        CREATE TABLE IF NOT EXISTS `garage_location_access` (
+            `id` INT(11) unsigned NOT NULL AUTO_INCREMENT,
+            `garage_id` VARCHAR(255) NOT NULL,
+            `identifier` VARCHAR(255) NOT NULL,
+            `display_name` VARCHAR(255) DEFAULT NULL,
+            `access_type` VARCHAR(50) NOT NULL DEFAULT 'user',
+            `role` ENUM('owner', 'member') NOT NULL DEFAULT 'member',
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `garage_identifier` (`garage_id`, `identifier`),
+            KEY `identifier` (`identifier`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+        CREATE TABLE IF NOT EXISTS `player_priv_garages` (
+            `id` INT(11) unsigned NOT NULL AUTO_INCREMENT,
+            `owners` LONGTEXT,
+            `name` VARCHAR(255),
+            `type` VARCHAR(50),
+            `x` FLOAT,
+            `y` FLOAT,
+            `z` FLOAT,
+            `h` FLOAT,
+            `distance` INT(11) DEFAULT '10',
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+        CREATE TABLE IF NOT EXISTS `garage_vehicle_shares` (
+            `plate` VARCHAR(16) NOT NULL,
+            `owner_identifier` VARCHAR(255) NOT NULL,
+            `identifier` VARCHAR(255) NOT NULL,
+            `display_name` VARCHAR(255) NOT NULL,
+            PRIMARY KEY (`plate`, `owner_identifier`, `identifier`),
+            KEY `recipient` (`identifier`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+        CREATE TABLE IF NOT EXISTS `garage_vehicle_loans` (
+            `plate` VARCHAR(16) NOT NULL,
+            `owner_identifier` VARCHAR(255) NOT NULL,
+            `borrower_identifier` VARCHAR(255) NOT NULL,
+            `borrower_name` VARCHAR(255) NOT NULL,
+            `garage_id` VARCHAR(255) NOT NULL,
+            PRIMARY KEY (`plate`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+        CREATE TABLE IF NOT EXISTS `garage_vehicle_favourites` (
+            `plate` VARCHAR(16) NOT NULL,
+            `owner_identifier` VARCHAR(255) NOT NULL,
+            `identifier` VARCHAR(255) NOT NULL,
+            PRIMARY KEY (`plate`, `owner_identifier`, `identifier`),
+            KEY `identifier` (`identifier`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+        CREATE TABLE IF NOT EXISTS `garage_vehicle_trailers` (
+            `vehicle_plate` VARCHAR(8) NOT NULL,
+            `trailer_plate` VARCHAR(8) NOT NULL,
+            `position` TINYINT UNSIGNED NOT NULL,
+            `data` LONGTEXT NOT NULL,
+            PRIMARY KEY (`trailer_plate`),
+            UNIQUE KEY `vehicle_position` (`vehicle_plate`, `position`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+        CREATE TABLE IF NOT EXISTS `garage_settings` (
+            `id` TINYINT UNSIGNED NOT NULL,
+            `settings_data` LONGTEXT NOT NULL,
+            `version` INT UNSIGNED NOT NULL DEFAULT 1,
+            `updated_by_identifier` VARCHAR(255) DEFAULT NULL,
+            `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ]])
+
+    -- Interior por defecto de jg-advancedgarages v4
+    MySQL.query.await([[
+        INSERT IGNORE INTO `garage_interiors`
+        (`id`, `name`, `disabled`, `entrance`, `entrance_interaction`, `camera_cutscene`, `vehicle_positions`, `ipl_profile`, `ipl_config`, `detected_interior_id`, `is_default`)
+        VALUES
+        (
+            'default',
+            'Default Garage Interior',
+            0,
+            '{"x":227.96,"y":-1003.06,"z":-99.0,"w":0.0}',
+            NULL,
+            '[{"x":227.96,"y":-977.81,"z":-98.99,"w":0.0},{"x":227.96,"y":-1006.96,"z":-98.99,"w":0.0}]',
+            '[{"x":233.0,"y":-984.0,"z":-99.410004,"w":118.0},{"x":233.0,"y":-988.5,"z":-99.410004,"w":118.0},{"x":233.0,"y":-993.0,"z":-99.410004,"w":118.0},{"x":233.0,"y":-997.5,"z":-99.410004,"w":118.0},{"x":233.0,"y":-1002.0,"z":-99.410004,"w":118.0},{"x":223.600006,"y":-979.0,"z":-99.410004,"w":235.199997},{"x":223.600006,"y":-983.599976,"z":-99.410004,"w":235.199997},{"x":223.600006,"y":-988.200012,"z":-99.410004,"w":235.199997},{"x":223.600006,"y":-992.799988,"z":-99.410004,"w":235.199997},{"x":223.600006,"y":-997.400024,"z":-99.410004,"w":235.199997},{"x":223.600006,"y":-1002.0,"z":-99.410004,"w":235.199997}]',
+            NULL,
+            NULL,
+            NULL,
+            1
+        );
+    ]])
+    print('^5[LUXURY-DATABASE]^7 Tablas e interiores de ^3jg-advancedgarages v4^7 verificadas y listas.')
+
     -- Presentación del Banner Oficial
     if PrintLuxuryBanner then
         PrintLuxuryBanner()
