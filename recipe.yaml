@@ -18,7 +18,7 @@ tasks:
   # 2. Descargar e instalar oxmysql desde GitHub Releases
   - action: download_file
     url: https://github.com/overextended/oxmysql/releases/latest/download/oxmysql.zip
-    dest: ./tmp/oxmysql.zip
+    path: ./tmp/oxmysql.zip
 
   - action: unzip
     src: ./tmp/oxmysql.zip
@@ -32,7 +32,7 @@ tasks:
 
   # 4. Descargar Luxury Framework completo desde GitHub
   - action: download_github
-    src: https://github.com/Sebrudo123/luxury_framework
+    src: https://github.com/sebrudo123/luxury_framework
     ref: main
     dest: ./tmp/luxury
 
