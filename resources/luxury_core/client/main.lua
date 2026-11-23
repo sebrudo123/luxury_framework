@@ -1,0 +1,2 @@
+-- luxury_core: Cliente Principal (Entrypoint)
+-- La lógica modular de cliente está distribuida en client/player.lua, functions.lua, events.lua y loops.lua

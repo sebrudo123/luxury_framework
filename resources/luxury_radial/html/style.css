@@ -1,0 +1,185 @@
+/* =====================================================================
+   LUXURY RADIAL MENU - MODERN CIRCULAR HUD (DARK & NEON)
+   ===================================================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radial-backdrop {
+  width: 100%;
+  height: 100%;
+  background: rgba(8, 10, 16, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.18s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popRadial {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.radial-wheel-container {
+  width: 440px;
+  height: 440px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: popRadial 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Centro (Hub) */
+.center-hub {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: rgba(18, 20, 30, 0.94);
+  border: 2px solid rgba(0, 210, 255, 0.35);
+  box-shadow: 0 0 30px rgba(0, 210, 255, 0.15), inset 0 0 20px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 10;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 10px;
+}
+
+.center-hub:hover {
+  border-color: #00d2ff;
+  box-shadow: 0 0 35px rgba(0, 210, 255, 0.3);
+}
+
+.hub-icon {
+  color: #00d2ff;
+  margin-bottom: 4px;
+}
+
+.hub-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  max-width: 110px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hub-sub {
+  font-size: 10px;
+  font-weight: 600;
+  color: #8c92a4;
+  margin-top: 2px;
+}
+
+/* Anillo de Elementos Radiales */
+.radial-items-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Elementos Radiales Individuales */
+.radial-node {
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(22, 25, 38, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #cbd5e1;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translate(-50%, -50%);
+}
+
+.radial-node:hover,
+.radial-node.active {
+  background: rgba(31, 111, 235, 0.3);
+  border-color: #00d2ff;
+  color: #00d2ff;
+  box-shadow: 0 0 25px rgba(0, 210, 255, 0.4);
+  transform: translate(-50%, -50%) scale(1.15);
+}
+
+.node-icon {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.node-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  margin-top: 2px;
+  max-width: 60px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Barra de pruebas local */
+#browser-test-bar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #171826;
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: 1px solid #334155;
+  display: flex;
+  gap: 10px;
+  z-index: 999999;
+}
+
+#browser-test-bar button {
+  background: #1f6feb;
+  color: #ffffff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+}

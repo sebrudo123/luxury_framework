@@ -1,0 +1,55 @@
+$engine: 3
+$onesync: on
+name: Luxury Framework
+author: Luxury Framework Team
+description: Receta oficial de Luxury Framework para FiveM. Despliegue completo y automatizado desde GitHub con arquitectura de 0.00ms resmon.
+
+tasks:
+  # 1. Descargar recursos base de CitizenFX (cfx-server-data)
+  - action: download_github
+    src: https://github.com/citizenfx/cfx-server-data
+    ref: master
+    subpath: resources
+    dest: ./resources/[cfx-default]
+
+  - action: remove_path
+    path: ./resources/[cfx-default]/[gameplay]/chat
+
+  # 2. Descargar e instalar oxmysql desde GitHub Releases
+  - action: download_file
+    url: https://github.com/overextended/oxmysql/releases/latest/download/oxmysql.zip
+    dest: ./tmp/oxmysql.zip
+
+  - action: unzip
+    src: ./tmp/oxmysql.zip
+    dest: ./resources/[standalone]
+
+  - action: remove_path
+    path: ./tmp/oxmysql.zip
+
+  # 3. Conectar a la base de datos MySQL/MariaDB
+  - action: connect_database
+
+  # 4. Descargar Luxury Framework completo desde GitHub
+  - action: download_github
+    src: https://github.com/Sebrudo123/luxury_framework
+    ref: main
+    dest: ./tmp/luxury
+
+  # 5. Ejecutar migraciones SQL del framework en la base de datos
+  - action: query_database
+    file: ./tmp/luxury/install.sql
+
+  # 6. Desplegar configuración server.cfg optimizada
+  - action: move_path
+    src: ./tmp/luxury/server.cfg
+    dest: ./server.cfg
+
+  # 7. Mover todos los recursos del framework a resources/[luxury]
+  - action: move_path
+    src: ./tmp/luxury/resources
+    dest: ./resources/[luxury]
+
+  # 8. Limpiar archivos temporales
+  - action: remove_path
+    path: ./tmp

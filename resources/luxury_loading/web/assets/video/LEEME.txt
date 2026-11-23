@@ -1,0 +1,2 @@
+Coloca aquí tu archivo de vídeo de fondo en formato .mp4 (por ejemplo: background.mp4).
+Luego actívalo en `web/config.js` cambiando `Config.Background.type = "video"`.

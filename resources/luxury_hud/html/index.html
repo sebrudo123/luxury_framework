@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Origen HUD NUI - Authentic Design</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Contenedor Principal HUD -->
+  <div id="hud-root" class="origen-hud-root">
+    
+    <!-- HUD de Dinero Estilo ESX (Superior Derecha) -->
+    <div id="esx-money-cluster" class="esx-money-container">
+      <div id="money-cash-pill" class="esx-money-pill cash">
+        <div class="pill-icon">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+            <path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+          </svg>
+        </div>
+        <div class="pill-body">
+          <span class="curr-symbol">$</span>
+          <span id="txt-hud-cash" class="money-val">0</span>
+        </div>
+      </div>
+
+      <div id="money-bank-pill" class="esx-money-pill bank">
+        <div class="pill-icon">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+            <line x1="2" y1="10" x2="22" y2="10"></line>
+          </svg>
+        </div>
+        <div class="pill-body">
+          <span class="curr-symbol">$</span>
+          <span id="txt-hud-bank" class="money-val">0</span>
+        </div>
+      </div>
+
+      <div id="money-black-pill" class="esx-money-pill black" style="display: none;">
+        <div class="pill-icon">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+          </svg>
+        </div>
+        <div class="pill-body">
+          <span class="curr-symbol">$</span>
+          <span id="txt-hud-black" class="money-val">0</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Bandas de Modo Cinemático (21:9 Panavision) -->
+    <div id="cinema-top" class="cinema-bar top"></div>
+    <div id="cinema-bottom" class="cinema-bar bottom"></div>
+
+    <!-- Barra de Calle y Brújula Compacta Flotante -->
+    <div id="origen-street-bar" class="street-compass-card">
+      <div class="compass-pill">
+        <span id="txt-cardinal">N</span>
+        <span id="txt-heading">0°</span>
+      </div>
+      <div class="street-info-group">
+        <span id="txt-street-name" class="street-title">ALTA STREET</span>
+        <span class="street-sep">•</span>
+        <span id="txt-zone-name" class="zone-title">HAWICK</span>
+      </div>
+      <div class="time-pill">
+        <span id="txt-game-time">14:32</span>
+      </div>
+    </div>
+
+    <!-- Vitals Radiales Pequeños y Minimalistas (Estilo Origen v2: 32px) -->
+    <div id="vitals-cluster" class="origen-vitals-container">
+      
+      <!-- Micrófono / Voz PMA -->
+      <div id="vital-voice" class="origen-circle voice" title="Voz / Proximidad">
+        <div class="voice-ripple"></div>
+        <svg class="progress-ring" viewBox="0 0 32 32">
+          <circle class="ring-bg" cx="16" cy="16" r="12.5" />
+          <circle id="ring-voice" class="ring-fill fill-voice" cx="16" cy="16" r="12.5" />
+        </svg>
+        <div class="circle-icon">
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
+            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+          </svg>
+        </div>
+        <div class="voice-dots">
+          <span id="vdot-1" class="vdot on"></span>
+          <span id="vdot-2" class="vdot on"></span>
+          <span id="vdot-3" class="vdot"></span>
+        </div>
+      </div>
+
+      <!-- Salud (Health) -->
+      <div id="vital-health" class="origen-circle health" title="Salud">
+        <svg class="progress-ring" viewBox="0 0 32 32">
+          <circle class="ring-bg" cx="16" cy="16" r="12.5" />
+          <circle id="ring-health" class="ring-fill fill-health" cx="16" cy="16" r="12.5" />
+        </svg>
+        <div class="circle-icon">
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Blindaje / Chaleco (Armor) -->
+      <div id="vital-armor" class="origen-circle armor" title="Blindaje">
+        <svg class="progress-ring" viewBox="0 0 32 32">
+          <circle class="ring-bg" cx="16" cy="16" r="12.5" />
+          <circle id="ring-armor" class="ring-fill fill-armor" cx="16" cy="16" r="12.5" />
+        </svg>
+        <div class="circle-icon">
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Comida / Hambre (Food) -->
+      <div id="vital-hunger" class="origen-circle hunger" title="Nutrición">
+        <svg class="progress-ring" viewBox="0 0 32 32">
+          <circle class="ring-bg" cx="16" cy="16" r="12.5" />
+          <circle id="ring-hunger" class="ring-fill fill-hunger" cx="16" cy="16" r="12.5" />
+        </svg>
+        <div class="circle-icon">
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
+            <path d="M18.06 22.99h1.66c.84 0 1.53-.64 1.63-1.48L23 5.05h-5V1h-1.97v4.05h-4.97l.3 2.34c1.71.47 3.31 1.32 4.27 2.26 1.44 1.42 2.43 2.89 2.43 5.29v8.05zM1 21.99V11c0-2.4 1.01-4.04 2.5-5.32 1.34-1.15 3.09-1.92 4.97-2.31L8.14 1h-2v4.05H1V22h.01c.09.54.55.99 1.12.99h1.74v-1z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Agua / Sed (Thirst) -->
+      <div id="vital-thirst" class="origen-circle thirst" title="Hidratación">
+        <svg class="progress-ring" viewBox="0 0 32 32">
+          <circle class="ring-bg" cx="16" cy="16" r="12.5" />
+          <circle id="ring-thirst" class="ring-fill fill-thirst" cx="16" cy="16" r="12.5" />
+        </svg>
+        <div class="circle-icon">
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
+            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Resistencia (Stamina) -->
+      <div id="vital-stamina" class="origen-circle stamina" title="Resistencia">
+        <svg class="progress-ring" viewBox="0 0 32 32">
+          <circle class="ring-bg" cx="16" cy="16" r="12.5" />
+          <circle id="ring-stamina" class="ring-fill fill-stamina" cx="16" cy="16" r="12.5" />
+        </svg>
+        <div class="circle-icon">
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
+            <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Estrés (Stress) -->
+      <div id="vital-stress" class="origen-circle stress" title="Estrés" style="display: none;">
+        <svg class="progress-ring" viewBox="0 0 32 32">
+          <circle class="ring-bg" cx="16" cy="16" r="12.5" />
+          <circle id="ring-stress" class="ring-fill fill-stress" cx="16" cy="16" r="12.5" />
+        </svg>
+        <div class="circle-icon">
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
+            <path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.22 19.59 10.57 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5h2v6h-2V8zm1 10.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Oxígeno (Diving/Buceo) -->
+      <div id="vital-oxygen" class="origen-circle oxygen" title="Oxígeno" style="display: none;">
+        <svg class="progress-ring" viewBox="0 0 32 32">
+          <circle class="ring-bg" cx="16" cy="16" r="12.5" />
+          <circle id="ring-oxygen" class="ring-fill fill-oxygen" cx="16" cy="16" r="12.5" />
+        </svg>
+        <div class="circle-icon">
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
+            <path d="M19 13h-2V9c0-1.1-.9-2-2-2h-1V3h-4v4H9c-1.1 0-2 .9-2 2v4H5c-1.1 0-2 .9-2 2v5c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-5c0-1.1-.9-2-2-2z"/>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========================================================
+         VELOCÍMETRO IDÉNTICO A ORIGEN HUD (DIAL CIRCULAR + DOCK)
+         ======================================================== -->
+    <div id="origen-speedo-panel" class="origen-carhud-container" style="display: none;">
+      
+      <!-- Dial Circular Principal de Velocidad y RPM -->
+      <div class="origen-dial-wrapper">
+        <svg class="origen-dial-svg" viewBox="0 0 130 130">
+          <defs>
+            <linearGradient id="origenRpmGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#10b981" />
+              <stop offset="65%" stop-color="#f59e0b" />
+              <stop offset="100%" stop-color="#ef4444" />
+            </linearGradient>
+          </defs>
+          <!-- Anillo de Fondo -->
+          <circle class="dial-bg" cx="65" cy="65" r="54" />
+          <!-- Anillo Dinámico de RPM / Velocidad -->
+          <circle id="dial-rpm-fill" class="dial-fill" cx="65" cy="65" r="54" />
+        </svg>
+
+        <!-- Datos Centrales del Dial -->
+        <div class="dial-center-data">
+          <div class="dial-gear-pill">
+            <span id="txt-gear" class="gear-val">1</span>
+          </div>
+          <div class="dial-speed-row">
+            <span id="txt-speed" class="speed-number">0</span>
+          </div>
+          <div class="dial-unit-row">
+            <span id="txt-unit" class="speed-unit-text">KM/H</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dock Lateral de Telemetría (Estilo Origen Network) -->
+      <div class="origen-car-details">
+        
+        <!-- Medidor Circular Mini de Gasolina -->
+        <div id="gauge-fuel" class="origen-mini-gauge" title="Combustible">
+          <svg class="mini-gauge-svg" viewBox="0 0 36 36">
+            <circle class="mini-bg" cx="18" cy="18" r="14" />
+            <circle id="mini-fuel-fill" class="mini-fill fill-fuel" cx="18" cy="18" r="14" />
+          </svg>
+          <div class="mini-icon">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
+              <path d="M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2h-1V5c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v16h10v-7.5h1.5v5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V9c0-.69-.28-1.32-.73-1.77zM12 10H6V5h6v5z"/>
+            </svg>
+          </div>
+          <span id="txt-fuel" class="mini-val">100%</span>
+        </div>
+
+        <!-- Medidor Circular Mini de Motor -->
+        <div id="gauge-engine" class="origen-mini-gauge" title="Salud del Motor">
+          <svg class="mini-gauge-svg" viewBox="0 0 36 36">
+            <circle class="mini-bg" cx="18" cy="18" r="14" />
+            <circle id="mini-engine-fill" class="mini-fill fill-engine" cx="18" cy="18" r="14" />
+          </svg>
+          <div class="mini-icon">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
+              <path d="M7 4V2H5v2H3v3h2v1H3v3h2v2H2v3h3v2h2v-2h10v2h2v-2h3v-3h-2v-2h2V8h-2V7h2V4h-2V2h-2v2H7zm1 3h8v8H8V7z"/>
+            </svg>
+          </div>
+          <span id="txt-engine" class="mini-val">100%</span>
+        </div>
+
+        <!-- Fila de Iconos de Estado (Cinturón, Luces, Puertas) -->
+        <div class="origen-status-icons">
+          <!-- Cinturón de Seguridad -->
+          <div id="ind-seatbelt" class="status-icon-pill seatbelt-off" title="Cinturón de Seguridad (Tecla B)">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
+              <path d="M7 3h10v2H7V3zm10 4H7c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm-3 12h-4v-2h4v2zm0-4h-4v-4h4v4z"/>
+            </svg>
+          </div>
+
+          <!-- Luces -->
+          <div id="ind-lights" class="status-icon-pill lights-off" title="Luces">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+            </svg>
+          </div>
+
+          <!-- Seguro de Puertas -->
+          <div id="ind-lock" class="status-icon-pill lock-open" title="Seguro de Puertas">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
+              <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+            </svg>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Menú Modal de Ajustes /hud (Estilo Origen) -->
+    <div id="settings-modal" class="origen-settings-overlay" style="display: none;">
+      <div class="origen-settings-card">
+        <div class="settings-head">
+          <div class="settings-title-group">
+            <div class="brand-tag">ORIGEN HUD</div>
+            <h2>Configuración de Interfaz</h2>
+          </div>
+          <button id="btn-close-settings" class="btn-close-modal" title="Cerrar">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <div class="settings-body">
+          <div class="setting-item">
+            <div>
+              <span class="setting-name">Modo Dinámico</span>
+              <p class="setting-desc">Oculta salud, comida y bebida cuando estén al 100%.</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="chk-dynamic" />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div>
+              <span class="setting-name">Brújula y Calles</span>
+              <p class="setting-desc">Muestra la barra superior de ubicación y reloj.</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="chk-compass" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div>
+              <span class="setting-name">Modo Cinemático (21:9)</span>
+              <p class="setting-desc">Activa las bandas panorámicas negras estilo película.</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="chk-cinematic" />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div>
+              <span class="setting-name">Escala del HUD</span>
+              <p class="setting-desc">Ajusta el tamaño visual en pantalla.</p>
+            </div>
+            <div class="slider-wrapper">
+              <input type="range" id="rng-scale" min="80" max="120" value="100" />
+              <span id="txt-scale-val">100%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-footer">
+          <button id="btn-save-settings" class="btn-save">GUARDAR AJUSTES</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Barra de Pruebas de Desarrollo en Navegador -->
+  <div id="browser-toolbar" class="browser-dev-bar" style="display: none;">
+    <span class="dev-title">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="#06b6d4" style="vertical-align: middle; margin-right: 4px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <span>PRUEBAS ORIGEN HUD</span>
+      </span>
+    <button id="btn-dev-veh" class="btn-dev">Vehículo (On/Off)</button>
+    <button id="btn-dev-accel" class="btn-dev">Acelerar (+35)</button>
+    <button id="btn-dev-brake" class="btn-dev">Frenar (-35)</button>
+    <button id="btn-dev-seatbelt" class="btn-dev">Cinturón (B)</button>
+    <button id="btn-dev-talk" class="btn-dev">Voz Hablando</button>
+    <button id="btn-dev-damage" class="btn-dev">Daño (-25)</button>
+    <button id="btn-dev-menu" class="btn-dev">Ajustes (/hud)</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

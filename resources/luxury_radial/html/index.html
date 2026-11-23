@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luxury Radial Menu</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Contenedor Principal del Menú Radial -->
+  <div id="radial-backdrop" class="radial-backdrop" style="display: none;">
+    <div class="radial-wheel-container">
+      
+      <!-- Círculo Central (Hub) -->
+      <div id="radial-center-hub" class="center-hub">
+        <div id="hub-icon-wrap" class="hub-icon">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 2a10 10 0 0 1 10 10"></path>
+          </svg>
+        </div>
+        <span id="hub-label" class="hub-label">SELECCIONAR</span>
+        <span id="hub-sub" class="hub-sub">Menú Rápido</span>
+      </div>
+
+      <!-- Anillo Exterior con Elementos Radiales -->
+      <div id="radial-items-ring" class="radial-items-ring"></div>
+
+    </div>
+  </div>
+
+  <!-- Barra de pruebas local -->
+  <div id="browser-test-bar" style="display: none;">
+    <button id="btn-test-veh">Radial Vehículo</button>
+    <button id="btn-test-foot">Radial A Pie</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

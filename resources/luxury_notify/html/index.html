@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luxury Notify & TextUI</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Contenedor de Notificaciones (Superior Derecha) -->
+  <div id="notify-container" class="notify-stack"></div>
+
+  <!-- Contenedor TextUI Flotante -->
+  <div id="textui-container" class="textui-box" style="display: none;">
+    <div class="textui-icon">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="16" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+      </svg>
+    </div>
+    <div id="textui-msg" class="textui-content">Presiona E para interactuar</div>
+  </div>
+
+  <!-- Barra de pruebas en navegador -->
+  <div id="browser-test-bar" style="display: none;">
+    <button id="btn-test-success">Éxito</button>
+    <button id="btn-test-error">Error</button>
+    <button id="btn-test-info">Info</button>
+    <button id="btn-test-warning">Advertencia</button>
+    <button id="btn-test-textui">Alternar TextUI</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

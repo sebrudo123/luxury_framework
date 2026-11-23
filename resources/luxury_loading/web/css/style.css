@@ -1,0 +1,894 @@
+/* ==========================================================================
+   LUXURY SCRIPTS - EXACT ORIGEN LOADING SCREEN STYLE & SIZE
+   Aesthetics: 100% Cinematic, Local MP4 Video, Exact Origen Loadingscreen Bar
+   Dimensions & Style + Bottom-Right Spotify Mini-Player.
+   ZERO EMOJIS - 100% SVG Vector Graphics.
+   ========================================================================== */
+
+:root {
+    --primary-color: #D4AF37;
+    --primary-hover: #F3E5AB;
+    --primary-glow: rgba(212, 175, 55, 0.7);
+    --secondary-color: #E6CA65;
+    
+    --spotify-green: #1ED760;
+    --spotify-glow: rgba(30, 215, 96, 0.5);
+    
+    --bg-dark: #08080a;
+    --bg-darker: #040405;
+    --bg-panel: rgba(12, 12, 16, 0.88);
+    
+    --border-gold: rgba(212, 175, 55, 0.35);
+    --border-gold-glow: rgba(212, 175, 55, 0.8);
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    
+    --text-white: #ffffff;
+    --text-muted: #9696a0;
+    --text-gold: #f3e5ab;
+    
+    --font-heading: 'Cinzel', 'Montserrat', serif, sans-serif;
+    --font-body: 'Montserrat', sans-serif;
+    --font-mono: 'Space Grotesk', monospace;
+    
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    outline: none;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--bg-dark);
+    font-family: var(--font-body);
+    color: var(--text-white);
+    font-size: 14px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.gold-gradient-text {
+    background: linear-gradient(135deg, #fff5d1 0%, #d4af37 50%, #9e7a12 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    filter: drop-shadow(0 2px 8px rgba(212, 175, 55, 0.35));
+}
+
+/* ==========================================================================
+   1. FONDO DE VÍDEO LOCAL MP4
+   ========================================================================== */
+
+.local-video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #1b1b24 0%, #0c0c10 70%, #050507 100%);
+}
+
+#bg-local-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+}
+
+.cinematic-vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(8, 8, 10, 0.15) 0%, rgba(8, 8, 10, 0.6) 65%, rgba(4, 4, 5, 0.95) 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.luxury-dust-glow {
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 700px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+    filter: blur(50px);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ==========================================================================
+   CURSOR PERSONALIZADO DE LUJO
+   ========================================================================== */
+
+.custom-cursor {
+    position: fixed;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+    display: none;
+}
+
+.cursor-dot {
+    width: 7px;
+    height: 7px;
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color);
+}
+
+.cursor-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--border-gold-glow);
+    border-radius: 50%;
+    transition: width 0.2s, height 0.2s, border-color 0.2s;
+}
+
+/* ==========================================================================
+   2. VIEWPORT CINEMATOGRÁFICO
+   ========================================================================== */
+
+.cinematic-app-frame {
+    position: relative;
+    z-index: 2;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 24px 34px;
+}
+
+/* ==========================================================================
+   HEADER SUPERIOR MINIMALISTA
+   ========================================================================== */
+
+.luxury-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    position: relative;
+    z-index: 5;
+}
+
+.server-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(10, 10, 14, 0.55);
+    padding: 7px 16px 7px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border-subtle);
+    backdrop-filter: blur(16px);
+}
+
+.logo-container {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.brand-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 4px 10px rgba(212, 175, 55, 0.5));
+}
+
+.logo-ambient-glow {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, var(--primary-color) 0%, transparent 70%);
+    filter: blur(12px);
+    opacity: 0.5;
+    animation: pulse-glow 3s infinite ease-in-out;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { opacity: 0.35; transform: scale(0.9); }
+    50% { opacity: 0.75; transform: scale(1.15); }
+}
+
+.brand-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 1.5px;
+}
+
+.server-badge {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(212, 175, 55, 0.15);
+    border: 1px solid var(--border-gold);
+    color: var(--primary-color);
+}
+
+.brand-tagline {
+    font-size: 8.5px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.discord-quick-pill {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    background: rgba(12, 12, 16, 0.75);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-white);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    backdrop-filter: blur(16px);
+    transition: var(--transition-fast);
+}
+
+.dc-icon {
+    width: 15px;
+    height: 15px;
+    fill: #5865F2;
+}
+
+.discord-quick-pill:hover {
+    background: rgba(88, 101, 242, 0.2);
+    border-color: #5865F2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(88, 101, 242, 0.4);
+}
+
+/* ==========================================================================
+   ESPACIO CENTRAL 100% LIMPIO
+   ========================================================================== */
+
+.clean-cinematic-center {
+    flex: 1;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   3. ZONA INFERIOR: BARRA ESTILO ORIGEN + SPOTIFY ABAJO A LA DERECHA
+   ========================================================================== */
+
+.bottom-interface-row {
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    position: relative;
+    z-index: 5;
+}
+
+/* ==========================================================================
+   BARRA DE CARGA EXACTA ESTILO & TAMAÑO ORIGEN LOADSCREEN
+   ========================================================================== */
+
+.origen-loader-box {
+    width: 490px; /* Tamaño exacto compacto de Origen */
+    max-width: 520px;
+    background: var(--bg-panel);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 3.5px solid var(--primary-color); /* Borde lateral icónico de Origen */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 6px; /* Bordes sutiles y elegantes característicos */
+    padding: 10px 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Fila Superior Origen: Dot + Título + Tag de Fase + Porcentaje */
+.origen-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.origen-left-title {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.origen-live-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--primary-color);
+    animation: origen-pulse 1.6s infinite ease-in-out;
+}
+
+@keyframes origen-pulse {
+    0%, 100% { opacity: 0.4; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.3); filter: drop-shadow(0 0 6px var(--primary-color)); }
+}
+
+.origen-label {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+    color: var(--text-white);
+    text-transform: uppercase;
+}
+
+.origen-tag {
+    font-family: var(--font-mono);
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--primary-color);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.origen-percentage-wrap {
+    display: flex;
+    align-items: baseline;
+    font-family: var(--font-mono);
+}
+
+.origen-pct-val {
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--primary-color);
+}
+
+.origen-pct-unit {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #8e8e98;
+    margin-left: 1px;
+}
+
+/* Pista de Carga Origen (Slim 3.5px) */
+.origen-bar-track {
+    width: 100%;
+    height: 3.5px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    position: relative;
+    margin: 7px 0 5px 0;
+    overflow: visible;
+}
+
+.origen-bar-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #aa8210 0%, #d4af37 100%);
+    border-radius: 2px;
+    position: relative;
+    box-shadow: 0 0 10px var(--primary-glow);
+    transition: width 0.22s cubic-bezier(0.1, 0.8, 0.2, 1);
+}
+
+/* Chispa frontal brillante de Origen */
+.origen-spark-point {
+    position: absolute;
+    top: -2.75px;
+    right: -4px;
+    width: 9px;
+    height: 9px;
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #ffffff, 0 0 14px var(--primary-color);
+    z-index: 2;
+}
+
+/* Fila Inferior Origen: Estado y Tip Vectorial */
+.origen-footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 9.5px;
+    color: var(--text-muted);
+}
+
+.origen-status-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 290px;
+}
+
+.origen-status-prefix {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.8px;
+    font-size: 9px;
+}
+
+.origen-log-msg {
+    font-family: var(--font-body);
+    color: #b5b5be;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.origen-tip-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 180px;
+}
+
+.tip-svg-icon {
+    width: 11px;
+    height: 11px;
+    fill: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.origen-tip-rotator {
+    font-size: 9px;
+    color: #888892;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    transition: opacity 0.35s ease;
+}
+
+/* ================= REPRODUCTOR SPOTIFY COMPACTO ================= */
+
+.bottom-right-player-wrapper {
+    position: relative;
+    width: 265px;
+}
+
+.mini-spotify-player {
+    width: 100%;
+    height: 48px;
+    background: var(--bg-panel);
+    border: 1px solid rgba(30, 215, 96, 0.35);
+    border-radius: 8px;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75), 0 0 15px rgba(30, 215, 96, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.mini-spotify-player:hover {
+    border-color: rgba(30, 215, 96, 0.7);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(30, 215, 96, 0.25);
+}
+
+.player-left-col {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    flex: 1;
+}
+
+.sp-mini-icon-box {
+    width: 26px;
+    height: 26px;
+    background: rgba(30, 215, 96, 0.15);
+    border: 1px solid rgba(30, 215, 96, 0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.sp-mini-icon {
+    width: 15px;
+    height: 15px;
+    fill: var(--spotify-green);
+    filter: drop-shadow(0 0 4px var(--spotify-green));
+}
+
+.sp-mini-track-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.track-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-white);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.track-artist {
+    font-size: 9px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.player-right-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+.player-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.player-btn svg {
+    width: 12px;
+    height: 12px;
+}
+
+.player-btn:hover {
+    background: rgba(212, 175, 55, 0.15);
+    border-color: var(--border-gold);
+    color: var(--primary-color);
+}
+
+.btn-play-pause {
+    background: rgba(30, 215, 96, 0.15);
+    border-color: rgba(30, 215, 96, 0.4);
+    color: var(--spotify-green);
+}
+
+.btn-play-pause:hover {
+    background: var(--spotify-green);
+    color: #040405;
+    box-shadow: 0 0 10px var(--spotify-glow);
+}
+
+.btn-view-list {
+    border-radius: 6px;
+}
+
+.btn-view-list:hover, .btn-view-list.active {
+    background: rgba(30, 215, 96, 0.2);
+    border-color: var(--spotify-green);
+    color: var(--spotify-green);
+}
+
+/* ================= TARJETA FLOTANTE DE LA LISTA (POPOVER) ================= */
+
+.playlist-popover-card {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    right: 0;
+    width: 310px;
+    background: rgba(12, 12, 16, 0.94);
+    border: 1px solid rgba(30, 215, 96, 0.4);
+    border-radius: 10px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(30, 215, 96, 0.18);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: popover-slide-up 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 100;
+}
+
+@keyframes popover-slide-up {
+    from { opacity: 0; transform: translateY(12px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.popover-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-subtle);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.popover-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sp-pop-icon {
+    width: 16px;
+    height: 16px;
+    fill: var(--spotify-green);
+}
+
+.popover-title {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--text-white);
+}
+
+.popover-close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    transition: var(--transition-fast);
+}
+
+.svg-close-icon {
+    width: 13px;
+    height: 13px;
+    stroke: currentColor;
+}
+
+.popover-close-btn:hover {
+    color: var(--text-white);
+}
+
+/* Lista de pistas */
+.popover-tracklist {
+    max-height: 210px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 6px;
+}
+
+.tracklist-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.tracklist-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.tracklist-item.active-track {
+    background: rgba(30, 215, 96, 0.12);
+    border: 1px solid rgba(30, 215, 96, 0.3);
+}
+
+.track-item-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+}
+
+.track-index {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    width: 14px;
+    text-align: center;
+}
+
+.active-track .track-index {
+    color: var(--spotify-green);
+    font-weight: 700;
+}
+
+.track-meta {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.track-name-row {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-white);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.active-track .track-name-row {
+    color: var(--spotify-green);
+    font-weight: 700;
+}
+
+.track-artist-row {
+    font-size: 9.5px;
+    color: var(--text-muted);
+}
+
+.track-duration {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-left: 8px;
+}
+
+/* Footer del Popover con botón Spotify */
+.popover-footer {
+    padding: 8px 12px;
+    border-top: 1px solid var(--border-subtle);
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+}
+
+.btn-open-spotify {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: var(--spotify-green);
+    color: #040405;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+
+.btn-open-spotify:hover {
+    background: #1ed760ee;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--spotify-glow);
+}
+
+/* ==========================================================================
+   TOAST NOTIFICACIÓN (VECTORIAL)
+   ========================================================================== */
+
+.luxury-toast {
+    position: fixed;
+    top: 36px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: rgba(18, 18, 22, 0.95);
+    border: 1px solid var(--border-gold);
+    backdrop-filter: blur(20px);
+    padding: 10px 22px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8), 0 0 20px var(--primary-glow);
+    z-index: 10000;
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+    pointer-events: none;
+}
+
+.luxury-toast.toast-show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast-icon {
+    width: 20px;
+    height: 20px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.svg-check {
+    width: 12px;
+    height: 12px;
+    stroke: var(--bg-darker);
+}
+
+.toast-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-white);
+}
+
+/* ==========================================================================
+   RESPONSIVIDAD
+   ========================================================================== */
+
+@media (max-width: 900px) {
+    .cinematic-app-frame {
+        padding: 16px;
+    }
+    .bottom-interface-row {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+    .origen-loader-box, .bottom-right-player-wrapper {
+        max-width: 100%;
+        width: 100%;
+    }
+    .playlist-popover-card {
+        width: 100%;
+    }
+    .brand-tagline, .origen-tip-group {
+        display: none;
+    }
+}
+
+/* Alineación de la barra superior derecha */
+.top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}

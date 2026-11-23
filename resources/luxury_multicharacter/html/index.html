@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luxury ESX Multicharacter</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Contenedor Principal (Estilo ESX Simple & Limpio) -->
+  <div id="multichar-container" class="esx-multichar-root" style="display: none;">
+    
+    <!-- Alerta Flotante (Toast) -->
+    <div id="mc-notification" class="esx-toast" style="display: none;">
+      <span id="mc-alert-icon" class="toast-icon">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+      </span>
+      <span id="mc-alert-msg" class="toast-msg">Mensaje de notificación</span>
+    </div>
+
+    <!-- Panel Lateral Izquierdo (ESX Slots List) -->
+    <aside class="esx-sidebar">
+      
+      <!-- Cabecera del Servidor -->
+      <div class="esx-brand">
+        <div class="brand-crest">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#d4af37" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">LUXURY ROLEPLAY</h1>
+          <p class="brand-subtitle">Selección de Personaje</p>
+        </div>
+      </div>
+
+      <!-- Lista de Ranuras / Personajes (ESX Style) -->
+      <div id="slots-list" class="slots-container">
+        <!-- Generado dinámicamente -->
+      </div>
+
+    </aside>
+
+    <!-- Modal de Creación de Personaje (Limpio y Centrado) -->
+    <div id="modal-create-char" class="esx-modal-backdrop" style="display: none;">
+      <div class="esx-modal-card">
+        <div class="modal-header">
+          <h2>Crear Nuevo Personaje</h2>
+          <p>Ingresa los datos para comenzar tu historia en el servidor.</p>
+        </div>
+
+        <form id="form-create-char" class="modal-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>NOMBRE</label>
+              <input type="text" id="inp-create-fname" required placeholder="Ej: Alexander" maxlength="20" autocomplete="off" />
+            </div>
+            <div class="form-group">
+              <label>APELLIDO</label>
+              <input type="text" id="inp-create-lname" required placeholder="Ej: Vance" maxlength="20" autocomplete="off" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>FECHA DE NACIMIENTO</label>
+              <input type="date" id="inp-create-birthdate" required value="1998-05-15" />
+            </div>
+            <div class="form-group">
+              <label>ALTURA (CM)</label>
+              <input type="number" id="inp-create-height" min="140" max="210" value="180" placeholder="180" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>SEXO</label>
+            <select id="inp-create-gender">
+              <option value="0">Masculino</option>
+              <option value="1">Femenino</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>NACIONALIDAD / PROCEDENCIA</label>
+            <input type="text" id="inp-create-nationality" placeholder="Ej: Los Santos, San Andreas" value="Los Santos" required />
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" id="btn-cancel-create" class="btn-secondary">Cancelar</button>
+            <button type="submit" class="btn-primary">Crear Personaje</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal de Confirmación de Borrado Seguro -->
+    <div id="modal-delete-char" class="esx-modal-backdrop" style="display: none;">
+      <div class="esx-modal-card danger-card">
+        <div class="modal-header">
+          <h2 class="text-rose">Eliminar Personaje</h2>
+          <p>Esta acción es permanente y no se puede deshacer. Todos los datos se perderán.</p>
+        </div>
+
+        <div class="modal-body">
+          <p class="delete-instruction">Escribe <strong class="text-rose">BORRAR</strong> para confirmar la eliminación de <strong id="txt-del-name">Alexander Vance</strong>:</p>
+          <input type="text" id="inp-delete-keyword" class="delete-input" placeholder="BORRAR" autocomplete="off" />
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" id="btn-cancel-del" class="btn-secondary">Cancelar</button>
+          <button type="button" id="btn-confirm-del" class="btn-danger">Eliminar Definitivamente</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Barra de Pruebas de Desarrollo en Navegador (Sólo fuera de FiveM) -->
+  <div id="mc-browser-bar" class="browser-test-bar" style="display: none;">
+    <span class="test-tag">MODO PRUEBAS ESX</span>
+    <button id="btn-add-sample-char" class="btn-test">+ Agregar Personaje Demo</button>
+    <button id="btn-reopen-mc" class="btn-test">Reabrir Menú</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
