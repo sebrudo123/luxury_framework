@@ -97,6 +97,14 @@ function Inventory.GetInventory(src)
     return exports.ox_inventory:GetInventory(src)
 end
 
+--- Limpia por completo el inventario del jugador
+-- @param src number: Source del jugador
+-- @return boolean
+function Inventory.ClearInventory(src)
+    if not hasOxInventory then return false end
+    return exports.ox_inventory:ClearInventory(src)
+end
+
 -- Exports del servidor para que cualquier recurso pueda interactuar con el inventario
 exports('AddItem', Inventory.AddItem)
 exports('RemoveItem', Inventory.RemoveItem)
@@ -104,3 +112,4 @@ exports('GetItem', Inventory.GetItem)
 exports('HasItem', Inventory.HasItem)
 exports('CanCarryItem', Inventory.CanCarryItem)
 exports('GetInventory', Inventory.GetInventory)
+exports('ClearInventory', Inventory.ClearInventory)

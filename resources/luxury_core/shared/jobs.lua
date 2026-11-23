@@ -53,19 +53,32 @@ Jobs['taxi'] = {
 
 -- Función utilitaria compartida para consultar información de un trabajo
 function GetJobInfo(jobName, grade)
-    local job = Jobs[jobName]
-    if not job then return nil end
-
+    if not jobName or type(jobName) ~= 'string' then return nil end
     grade = tonumber(grade) or 0
-    local gradeData = job.grades[grade] or job.grades[0]
+    local job = Jobs[jobName]
 
-    return {
-        name = jobName,
-        label = job.label,
-        grade = grade,
-        grade_name = gradeData and gradeData.name or 'default',
-        grade_label = gradeData and gradeData.label or 'Rango ' .. grade,
-        salary = gradeData and gradeData.salary or 0,
-        isBoss = gradeData and gradeData.isBoss or false
-    }
+    if job then
+        local gradeData = job.grades and (job.grades[grade] or job.grades[0])
+        return {
+            name = jobName,
+            label = job.label or jobName,
+            grade = grade,
+            grade_name = gradeData and gradeData.name or tostring(grade),
+            grade_label = gradeData and gradeData.label or ('Rango ' .. grade),
+            salary = gradeData and gradeData.salary or 150,
+            isBoss = gradeData and gradeData.isBoss or false
+        }
+    else
+        -- Fallback dinámico para scripts de terceros o trabajos no predefinidos en Jobs
+        local formattedLabel = jobName:gsub('^%l', string.upper)
+        return {
+            name = jobName,
+            label = formattedLabel,
+            grade = grade,
+            grade_name = tostring(grade),
+            grade_label = 'Rango ' .. grade,
+            salary = 200,
+            isBoss = (grade >= 3)
+        }
+    end
 end

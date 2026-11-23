@@ -15,7 +15,7 @@ local function checkAdmin(src, minGroup)
 end
 
 --- /setGroup [id] [grupo: user|mod|admin]
-RegisterCommand('setGroup', function(src, args)
+local function handleSetGroup(src, args)
     if not checkAdmin(src, 'admin') then
         return adminNotify(src, '^1No tienes permiso para usar este comando.^7')
     end
@@ -40,6 +40,231 @@ RegisterCommand('setGroup', function(src, args)
 
     adminNotify(src, ('^2Grupo de %s actualizado a: ^3%s^7'):format(target.name, targetGroup))
     adminNotify(targetId, ('^2Tu rango administrativo ha sido actualizado a: ^3%s^7'):format(targetGroup))
+end
+RegisterCommand('setGroup', handleSetGroup, false)
+RegisterCommand('setgroup', handleSetGroup, false)
+
+--- /setjob [id] [trabajo] [grado opcional]
+local function handleSetJob(src, args)
+    if not checkAdmin(src, 'admin') then
+        return adminNotify(src, '^1No tienes permiso para usar este comando.^7')
+    end
+
+    local targetId = tonumber(args[1])
+    local jobName = args[2]
+    local grade = tonumber(args[3]) or 0
+
+    if not targetId or not jobName then
+        return adminNotify(src, 'Uso: ^3/setjob [id] [trabajo] [grado opcional]^7')
+    end
+
+    local target = Core.Players[targetId]
+    if not target then
+        return adminNotify(src, '^1Jugador no encontrado.^7')
+    end
+
+    if target:setJob(jobName, grade) then
+        adminNotify(src, ('^2Trabajo de %s asignado a: ^3%s^2 (Grado: ^3%d^2 - %s)^7'):format(
+            target.name, target.job.label, target.job.grade, target.job.grade_label
+        ))
+        adminNotify(targetId, ('^2Tu trabajo ha sido actualizado a: ^3%s^2 (^3%s^2)^7'):format(
+            target.job.label, target.job.grade_label
+        ))
+    else
+        adminNotify(src, ('^1No se pudo asignar el trabajo "%s".^7'):format(jobName))
+    end
+end
+RegisterCommand('setjob', handleSetJob, false)
+RegisterCommand('setJob', handleSetJob, false)
+
+--- /setgang [id] [banda] [rango opcional]
+local function handleSetGang(src, args)
+    if not checkAdmin(src, 'admin') then
+        return adminNotify(src, '^1No tienes permiso para usar este comando.^7')
+    end
+
+    local targetId = tonumber(args[1])
+    local gangName = args[2]
+    local grade = tonumber(args[3]) or 0
+
+    if not targetId or not gangName then
+        return adminNotify(src, 'Uso: ^3/setgang [id] [banda] [rango opcional]^7')
+    end
+
+    local target = Core.Players[targetId]
+    if not target then
+        return adminNotify(src, '^1Jugador no encontrado.^7')
+    end
+
+    if target:setGang(gangName, grade) then
+        adminNotify(src, ('^2Banda de %s asignada a: ^3%s^2 (Rango: ^3%d^2 - %s)^7'):format(
+            target.name, target.gang.label, target.gang.grade, target.gang.grade_label
+        ))
+        adminNotify(targetId, ('^2Tu afiliación a banda ha cambiado a: ^3%s^2 (^3%s^2)^7'):format(
+            target.gang.label, target.gang.grade_label
+        ))
+    else
+        adminNotify(src, ('^1No se pudo asignar la banda "%s".^7'):format(gangName))
+    end
+end
+RegisterCommand('setgang', handleSetGang, false)
+RegisterCommand('setGang', handleSetGang, false)
+
+--- /givemoney [id] [cash|bank|crypto] [cantidad]
+local function handleGiveMoney(src, args)
+    if not checkAdmin(src, 'admin') then
+        return adminNotify(src, '^1No tienes permiso para usar este comando.^7')
+    end
+
+    local targetId = tonumber(args[1])
+    local account = args[2] or 'cash'
+    local amount = tonumber(args[3])
+
+    if not targetId or not amount or amount <= 0 then
+        return adminNotify(src, 'Uso: ^3/givemoney [id] [cash|bank|crypto] [cantidad]^7')
+    end
+
+    local target = Core.Players[targetId]
+    if not target then
+        return adminNotify(src, '^1Jugador no encontrado.^7')
+    end
+
+    if target:addMoney(account, amount) then
+        adminNotify(src, ('^2Se han añadido ^3$%s^2 a la cuenta ^3%s^2 de %s.^7'):format(amount, account, target.name))
+        adminNotify(targetId, ('^2Has recibido ^3$%s^2 en tu cuenta de ^3%s^2 por la administración.^7'):format(amount, account))
+    else
+        adminNotify(src, '^1Error al añadir dinero a la cuenta.^7')
+    end
+end
+RegisterCommand('givemoney', handleGiveMoney, false)
+RegisterCommand('giveMoney', handleGiveMoney, false)
+RegisterCommand('addmoney', handleGiveMoney, false)
+
+--- /setmoney [id] [cash|bank|crypto] [cantidad]
+local function handleSetMoney(src, args)
+    if not checkAdmin(src, 'admin') then
+        return adminNotify(src, '^1No tienes permiso para usar este comando.^7')
+    end
+
+    local targetId = tonumber(args[1])
+    local account = args[2] or 'cash'
+    local amount = tonumber(args[3])
+
+    if not targetId or amount == nil or amount < 0 then
+        return adminNotify(src, 'Uso: ^3/setmoney [id] [cash|bank|crypto] [cantidad]^7')
+    end
+
+    local target = Core.Players[targetId]
+    if not target then
+        return adminNotify(src, '^1Jugador no encontrado.^7')
+    end
+
+    if target:setMoney(account, amount) then
+        adminNotify(src, ('^2Saldo de ^3%s^2 de %s fijado en: ^3$%s^7'):format(account, target.name, amount))
+        adminNotify(targetId, ('^2Tu saldo de ^3%s^2 ha sido fijado en: ^3$%s^7'):format(account, amount))
+    else
+        adminNotify(src, '^1Error al fijar dinero.^7')
+    end
+end
+RegisterCommand('setmoney', handleSetMoney, false)
+RegisterCommand('setMoney', handleSetMoney, false)
+
+--- /giveitem [id] [item] [cantidad opcional]
+local function handleGiveItem(src, args)
+    if not checkAdmin(src, 'admin') then
+        return adminNotify(src, '^1No tienes permiso para usar este comando.^7')
+    end
+
+    local targetId = tonumber(args[1])
+    local itemName = args[2]
+    local count = tonumber(args[3]) or 1
+
+    if not targetId or not itemName then
+        return adminNotify(src, 'Uso: ^3/giveitem [id] [item] [cantidad opcional]^7')
+    end
+
+    local target = Core.Players[targetId]
+    if not target then
+        return adminNotify(src, '^1Jugador no encontrado.^7')
+    end
+
+    local ok, err = target:addItem(itemName, count)
+    if ok then
+        adminNotify(src, ('^2Entregado ^3%s x%d^2 a %s.^7'):format(itemName, count, target.name))
+        adminNotify(targetId, ('^2Has recibido ^3%s x%d^2 en tu inventario.^7'):format(itemName, count))
+    else
+        adminNotify(src, ('^1No se pudo entregar el ítem: %s^7'):format(err or 'ox_inventory no disponible'))
+    end
+end
+RegisterCommand('giveitem', handleGiveItem, false)
+RegisterCommand('giveItem', handleGiveItem, false)
+
+--- /clearinventory [id opcional]
+local function handleClearInventory(src, args)
+    if not checkAdmin(src, 'admin') then
+        return adminNotify(src, '^1No tienes permiso para usar este comando.^7')
+    end
+
+    local targetId = tonumber(args[1]) or (src ~= 0 and src or nil)
+    if not targetId then
+        return adminNotify(src, 'Uso: ^3/clearinventory [id]^7')
+    end
+
+    local target = Core.Players[targetId]
+    if not target then
+        return adminNotify(src, '^1Jugador no encontrado.^7')
+    end
+
+    if target:clearInventory() then
+        adminNotify(src, ('^2Inventario de %s limpiado con éxito.^7'):format(target.name))
+        adminNotify(targetId, '^3Tu inventario ha sido vaciado por la administración.^7')
+    else
+        adminNotify(src, '^1No se pudo limpiar el inventario (ox_inventory no está listo).^7')
+    end
+end
+RegisterCommand('clearinventory', handleClearInventory, false)
+RegisterCommand('clearInventory', handleClearInventory, false)
+
+--- /heal [id opcional]
+RegisterCommand('heal', function(src, args)
+    if not checkAdmin(src, 'mod') then
+        return adminNotify(src, '^1No tienes permiso para usar este comando.^7')
+    end
+
+    local targetId = tonumber(args[1]) or src
+    if targetId == 0 then
+        return adminNotify(src, 'Debes especificar una ID válida desde la consola.')
+    end
+
+    local target = Core.Players[targetId]
+    if not target then
+        return adminNotify(src, '^1Jugador no encontrado.^7')
+    end
+
+    target:setNeed('hunger', 100)
+    target:setNeed('thirst', 100)
+    TriggerClientEvent('luxury:admin:clientHeal', targetId)
+    adminNotify(src, ('^2Jugador %s curado al máximo.^7'):format(target.name))
+end, false)
+
+--- /goto [id] (teletransportarse hacia un jugador)
+RegisterCommand('goto', function(src, args)
+    if not checkAdmin(src, 'mod') or src == 0 then
+        return adminNotify(src, '^1No tienes permisos suficientes o debes ejecutarlo en el juego.^7')
+    end
+
+    local targetId = tonumber(args[1])
+    if not targetId or not Core.Players[targetId] then
+        return adminNotify(src, 'Uso: ^3/goto [id]^7')
+    end
+
+    local target = Core.Players[targetId]
+    local targetPed = GetPlayerPed(targetId)
+    if targetPed and DoesEntityExist(targetPed) then
+        local coords = GetEntityCoords(targetPed)
+        TriggerClientEvent('luxury:admin:teleport', src, coords)
+        adminNotify(src, ('Te has teletransportado hacia ^3%s^7.'):format(target.name))
+    end
 end, false)
 
 --- /revive [id opcional]

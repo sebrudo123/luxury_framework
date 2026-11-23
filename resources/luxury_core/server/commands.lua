@@ -148,3 +148,128 @@ RegisterCommand('quitarLicencia', function(src, args)
         })
     end
 end, false)
+
+---------------------------------------------------------------------
+-- Comandos de Chat Roleplay (/me, /do, /ooc, /twt, /anon)
+---------------------------------------------------------------------
+
+-- /me [accion del personaje]
+RegisterCommand('me', function(src, args)
+    if src == 0 then return end
+    local player = Core.Players[src]
+    if not player then return end
+
+    if #args == 0 then
+        return notify(src, 'Uso: ^3/me [acción]^7')
+    end
+
+    local action = table.concat(args, ' ')
+    local name = player.name or (player.charinfo and (player.charinfo.firstname .. ' ' .. player.charinfo.lastname) or 'Ciudadano')
+    local ped = GetPlayerPed(src)
+    local coords = GetEntityCoords(ped)
+
+    for _, targetPlayer in pairs(Core.Players) do
+        local targetPed = GetPlayerPed(targetPlayer.source)
+        if targetPed and DoesEntityExist(targetPed) then
+            local dist = #(coords - GetEntityCoords(targetPed))
+            if dist <= 15.0 then
+                TriggerClientEvent('chat:addMessage', targetPlayer.source, {
+                    args = { ('^6* %s^7'):format(name), action }
+                })
+                TriggerClientEvent('luxury:client:show3DText', targetPlayer.source, src, action, 'me')
+            end
+        end
+    end
+end, false)
+
+-- /do [entorno o circunstancia]
+RegisterCommand('do', function(src, args)
+    if src == 0 then return end
+    local player = Core.Players[src]
+    if not player then return end
+
+    if #args == 0 then
+        return notify(src, 'Uso: ^3/do [entorno / situación]^7')
+    end
+
+    local action = table.concat(args, ' ')
+    local name = player.name or (player.charinfo and (player.charinfo.firstname .. ' ' .. player.charinfo.lastname) or 'Ciudadano')
+    local ped = GetPlayerPed(src)
+    local coords = GetEntityCoords(ped)
+
+    for _, targetPlayer in pairs(Core.Players) do
+        local targetPed = GetPlayerPed(targetPlayer.source)
+        if targetPed and DoesEntityExist(targetPed) then
+            local dist = #(coords - GetEntityCoords(targetPed))
+            if dist <= 15.0 then
+                TriggerClientEvent('chat:addMessage', targetPlayer.source, {
+                    args = { ('^4* [DO] %s^7'):format(name), action }
+                })
+                TriggerClientEvent('luxury:client:show3DText', targetPlayer.source, src, action, 'do')
+            end
+        end
+    end
+end, false)
+
+-- /ooc [mensaje] (o /b)
+local function handleOOC(src, args)
+    if src == 0 then return end
+    local player = Core.Players[src]
+    if not player then return end
+
+    if #args == 0 then
+        return notify(src, 'Uso: ^3/ooc [mensaje]^7')
+    end
+
+    local msg = table.concat(args, ' ')
+    local name = player.name or (player.charinfo and (player.charinfo.firstname .. ' ' .. player.charinfo.lastname) or 'Ciudadano')
+    local ped = GetPlayerPed(src)
+    local coords = GetEntityCoords(ped)
+
+    for _, targetPlayer in pairs(Core.Players) do
+        local targetPed = GetPlayerPed(targetPlayer.source)
+        if targetPed and DoesEntityExist(targetPed) then
+            local dist = #(coords - GetEntityCoords(targetPed))
+            if dist <= 20.0 then
+                TriggerClientEvent('chat:addMessage', targetPlayer.source, {
+                    args = { ('^7[OOC | %s (ID: %d)]^7'):format(name, src), msg }
+                })
+            end
+        end
+    end
+end
+RegisterCommand('ooc', handleOOC, false)
+RegisterCommand('b', handleOOC, false)
+
+-- /twt [mensaje] (o /tweet)
+local function handleTweet(src, args)
+    if src == 0 then return end
+    local player = Core.Players[src]
+    if not player then return end
+
+    if #args == 0 then
+        return notify(src, 'Uso: ^3/twt [mensaje]^7')
+    end
+
+    local msg = table.concat(args, ' ')
+    local handle = player.charinfo and (player.charinfo.firstname .. '_' .. player.charinfo.lastname) or player.name
+
+    TriggerClientEvent('chat:addMessage', -1, {
+        args = { ('^5[Twitter | @%s]^7'):format(handle), msg }
+    })
+end
+RegisterCommand('twt', handleTweet, false)
+RegisterCommand('tweet', handleTweet, false)
+
+-- /anon [mensaje]
+RegisterCommand('anon', function(src, args)
+    if src == 0 then return end
+    if #args == 0 then
+        return notify(src, 'Uso: ^3/anon [mensaje anónimo]^7')
+    end
+
+    local msg = table.concat(args, ' ')
+    TriggerClientEvent('chat:addMessage', -1, {
+        args = { '^1[Anónimo]^7', msg }
+    })
+end, false)

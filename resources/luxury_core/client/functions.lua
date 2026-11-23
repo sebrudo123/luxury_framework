@@ -39,5 +39,93 @@ function Functions.GetClosestVehicle(maxDistance)
     return 0, -1
 end
 
+--- Dibuja texto tridimensional en el mundo del juego
+-- @param x number
+-- @param y number
+-- @param z number
+-- @param text string
+-- @param r number|nil
+-- @param g number|nil
+-- @param b number|nil
+-- @param a number|nil
+function Functions.DrawText3D(x, y, z, text, r, g, b, a)
+    local onScreen, screenX, screenY = World3dToScreen2d(x, y, z)
+    if not onScreen then return end
+
+    local camCoords = GetGameplayCamCoord()
+    local dist = #(camCoords - vector3(x, y, z))
+    local scale = (1 / dist) * 2
+    local fov = (1 / GetGameplayCamFov()) * 100
+    scale = scale * fov
+
+    SetTextScale(0.35 * scale, 0.35 * scale)
+    SetTextFont(4)
+    SetTextProportional(1)
+    SetTextColour(r or 255, g or 255, b or 255, a or 220)
+    SetTextCentre(1)
+    SetTextOutline()
+    SetTextEntry('STRING')
+    AddTextComponentString(text)
+    DrawText(screenX, screenY)
+end
+
+---------------------------------------------------------------------
+-- Sistema de Texto Flotante Sobre la Cabeza (/me y /do 3D)
+---------------------------------------------------------------------
+local activeOverheadTexts = {}
+
+RegisterNetEvent('luxury:client:show3DText', function(targetServerId, text, msgType)
+    local playerIdx = GetPlayerFromServerId(targetServerId)
+    if playerIdx == -1 and targetServerId ~= GetPlayerServerId(PlayerId()) then return end
+
+    local expiresAt = GetGameTimer() + 7000 -- 7 segundos de duración
+    local color = msgType == 'do' and { 56, 189, 248, 240 } or { 192, 132, 252, 240 }
+    local prefix = msgType == 'do' and '[DO] ' or '* '
+
+    activeOverheadTexts[#activeOverheadTexts + 1] = {
+        serverId = targetServerId,
+        text = prefix .. text,
+        color = color,
+        expiresAt = expiresAt
+    }
+end)
+
+CreateThread(function()
+    while true do
+        local sleep = 500
+        local now = GetGameTimer()
+        local count = #activeOverheadTexts
+
+        if count > 0 then
+            sleep = 0
+            local localPed = PlayerPedId()
+            local localCoords = GetEntityCoords(localPed)
+
+            for i = count, 1, -1 do
+                local entry = activeOverheadTexts[i]
+                if now > entry.expiresAt then
+                    table.remove(activeOverheadTexts, i)
+                else
+                    local playerIdx = GetPlayerFromServerId(entry.serverId)
+                    local targetPed = playerIdx ~= -1 and GetPlayerPed(playerIdx) or (entry.serverId == GetPlayerServerId(PlayerId()) and localPed or nil)
+
+                    if targetPed and DoesEntityExist(targetPed) then
+                        local pedCoords = GetEntityCoords(targetPed)
+                        local dist = #(localCoords - pedCoords)
+
+                        if dist <= 20.0 then
+                            local zOffset = 0.95 + (math.max(0, count - i) * 0.15)
+                            Functions.DrawText3D(pedCoords.x, pedCoords.y, pedCoords.z + zOffset, entry.text, entry.color[1], entry.color[2], entry.color[3], entry.color[4])
+                        end
+                    end
+                end
+            end
+        end
+
+        Wait(sleep)
+    end
+end)
+
 exports('GetClosestPlayer', Functions.GetClosestPlayer)
 exports('GetClosestVehicle', Functions.GetClosestVehicle)
+exports('DrawText3D', Functions.DrawText3D)

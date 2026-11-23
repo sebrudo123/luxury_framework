@@ -337,6 +337,10 @@ function LuxuryPlayer:getInventory()
     return Inventory.GetInventory(self.source)
 end
 
+function LuxuryPlayer:clearInventory()
+    return Inventory.ClearInventory(self.source)
+end
+
 ---------------------------------------------------------------------
 -- Sincronización y Persistencia
 ---------------------------------------------------------------------
