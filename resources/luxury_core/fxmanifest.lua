@@ -4,9 +4,18 @@ lua54 'yes'
 
 name 'luxury_core'
 description 'Framework base modular con arquitectura Qbox: Proxy/Tunnel, Gangs, Licencias, Buckets, blindaje Anti-Dump y Centinela Anti-Cheat'
-version '1.3.1'
+version '1.3.2'
+
+provide {
+    'require',
+    'cfxlua-require',
+    'es_extended',
+    'qb-core',
+    'qbx_core'
+}
 
 shared_scripts {
+    'bridge/cfxlua_require.lua',
     'shared/proxy.lua',
     'shared/tunnel.lua',
     'config/shared.lua',

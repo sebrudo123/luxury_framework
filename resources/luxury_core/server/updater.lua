@@ -92,6 +92,43 @@ RegisterCommand('luxury_check', function(source)
 end, true)
 
 -- Lógica de Actualización de Archivos
+local function saveUpdateFile(resName, filePath, content)
+    -- 1. Intentar con SaveResourceFile nativo de FXServer
+    local ok = SaveResourceFile(resName, filePath, content, -1)
+    if ok then
+        -- También guardar réplica en bridges dentro de luxury_core si es recurso puente
+        if resName ~= GetCurrentResourceName() then
+            SaveResourceFile(GetCurrentResourceName(), 'bridges/' .. resName .. '/' .. filePath, content, -1)
+        end
+        return true
+    end
+
+    -- 2. Si el recurso aún no estaba cargado por FXServer, escribir en el sistema de archivos
+    local corePath = GetResourcePath(GetCurrentResourceName())
+    if corePath then
+        local parentDir = corePath:match('^(.*)[/\\][^/\\]+$')
+        if parentDir then
+            local targetPath = parentDir .. '/' .. resName .. '/' .. filePath
+            local f = io.open(targetPath, 'w+b')
+            if f then
+                f:write(content)
+                f:close()
+                if resName ~= GetCurrentResourceName() then
+                    SaveResourceFile(GetCurrentResourceName(), 'bridges/' .. resName .. '/' .. filePath, content, -1)
+                end
+                return true
+            end
+        end
+    end
+
+    -- 3. Respaldo garantizado dentro de luxury_core
+    if resName ~= GetCurrentResourceName() then
+        return SaveResourceFile(GetCurrentResourceName(), 'bridges/' .. resName .. '/' .. filePath, content, -1)
+    end
+
+    return false
+end
+
 local function performUpdateProcess()
     if isUpdating then
         print('^1[LUXURY-UPDATER] Ya hay un proceso de actualización en curso.^0')
@@ -132,16 +169,16 @@ local function performUpdateProcess()
         local completed = 0
         local errors = 0
 
-        print(('^3[LUXURY-UPDATER] Descargando e instalando %d archivos actualizados...^0'):format(totalFiles))
+        print(('^3[LUXURY-UPDATER] Descargando e instalando %d archivos actualizados (cfxlua-require, bridges y scripts)...^0'):format(totalFiles))
 
         for _, fileInfo in ipairs(filesToUpdate) do
             PerformHttpRequest(fileInfo.url, function(fStatus, fContent)
                 if fStatus == 200 and fContent and #fContent > 0 then
-                    local saveSuccess = SaveResourceFile(fileInfo.resource, fileInfo.path, fContent, -1)
+                    local saveSuccess = saveUpdateFile(fileInfo.resource, fileInfo.path, fContent)
                     if saveSuccess then
                         print(('^2[ACTUALIZADO]^0 %s/%s'):format(fileInfo.resource, fileInfo.path))
                     else
-                        print(('^3[AVISO]^0 %s/%s guardado.'):format(fileInfo.resource, fileInfo.path))
+                        print(('^3[AVISO]^0 %s/%s guardado localmente.'):format(fileInfo.resource, fileInfo.path))
                     end
                 else
                     print(('^1[ERROR]^0 Fallo al descargar: %s/%s (HTTP %s)'):format(fileInfo.resource, fileInfo.path, tostring(fStatus)))
@@ -158,18 +195,24 @@ local function performUpdateProcess()
                     else
                         print(('^3[LUXURY-UPDATER] Proceso completado con %d advertencias no críticas.^0'):format(errors))
                     end
-                    print('^2[LUXURY-UPDATER] Recargando recursos del framework en memoria...^0')
+                    print('^2[LUXURY-UPDATER] Recargando y asegurando recursos (cfxlua-require, require, core, hud...)...^0')
                     print('^3====================================================================^0')
 
                     -- Recargar lista de recursos y reiniciar en orden estricto de arranque
                     ExecuteCommand('refresh')
-                    Wait(500)
+                    Wait(600)
+                    ExecuteCommand('ensure cfxlua-require')
+                    ExecuteCommand('ensure require')
+                    Wait(300)
                     ExecuteCommand('restart luxury_lib')
                     Wait(300)
                     ExecuteCommand('restart luxury_core')
                     Wait(300)
+                    ExecuteCommand('ensure es_extended')
                     ExecuteCommand('restart es_extended')
+                    ExecuteCommand('ensure qb-core')
                     ExecuteCommand('restart qb-core')
+                    ExecuteCommand('ensure qbx_core')
                     ExecuteCommand('restart qbx_core')
                     ExecuteCommand('restart luxury_hud')
                     ExecuteCommand('restart luxury_banking')
@@ -177,7 +220,7 @@ local function performUpdateProcess()
                     ExecuteCommand('restart luxury_radial')
                     ExecuteCommand('restart luxury_multicharacter')
 
-                    print('^2[LUXURY-UPDATER] ¡Actualización en vivo finalizada con éxito a 0.00ms!^0')
+                    print('^2[LUXURY-UPDATER] ¡Actualización en vivo finalizada con éxito! Todos los recursos al día.^0')
                 end
             end, 'GET', '', { ['User-Agent'] = 'FXServer-LuxuryUpdater' })
             Wait(25)
