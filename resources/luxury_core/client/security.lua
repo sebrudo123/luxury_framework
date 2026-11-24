@@ -118,7 +118,7 @@ CreateThread(function()
                 end
 
                 -- E) Detección de Modo Espectador / Freecam
-                if NetworkIsInSpectatorMode() and not LocalPlayer.state.isDead then
+                if NetworkIsInSpectatorMode() and not LocalPlayer.state.isDead and not LocalPlayer.state['luxury:spectating'] then
                     NetworkSetInSpectatorMode(false, ped)
                 end
 

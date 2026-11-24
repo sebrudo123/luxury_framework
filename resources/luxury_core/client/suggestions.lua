@@ -133,4 +133,40 @@ CreateThread(function()
     TriggerEvent('chat:addSuggestion', '/anuncio', 'Emite un comunicado destacado para todo el servidor.', {
         { name = 'mensaje', help = 'Texto del anuncio' }
     })
+
+    -- Servicio, Reportes, Emergencias y Utilidades Nuevas
+    TriggerEvent('chat:addSuggestion', '/duty', 'Entra o sal de servicio en tu trabajo actual.')
+    TriggerEvent('chat:addSuggestion', '/servicio', 'Alias de /duty para entrar o salir de servicio.')
+    TriggerEvent('chat:addSuggestion', '/logout', 'Regresa al selector de personajes (si Multi-Character está activo).')
+    TriggerEvent('chat:addSuggestion', '/report', 'Envía un reporte o petición de ayuda al staff en línea.', {
+        { name = 'mensaje', help = 'Describe tu problema o consulta' }
+    })
+    TriggerEvent('chat:addSuggestion', '/reply', 'Responde a un jugador tras recibir su reporte.', {
+        { name = 'id', help = 'ID del jugador' },
+        { name = 'respuesta', help = 'Mensaje de respuesta' }
+    })
+    TriggerEvent('chat:addSuggestion', '/911', 'Envía un aviso de emergencia con tu ubicación a Policía y EMS.', {
+        { name = 'descripción', help = 'Qué está ocurriendo' }
+    })
+    TriggerEvent('chat:addSuggestion', '/entorno', 'Alias de /911 para avisos de entorno a emergencias.', {
+        { name = 'descripción', help = 'Qué está ocurriendo' }
+    })
+    TriggerEvent('chat:addSuggestion', '/dado', 'Lanza un dado RP visible para jugadores cercanos.', {
+        { name = 'caras', help = 'Número de caras (opcional, defecto 6)' }
+    })
+    TriggerEvent('chat:addSuggestion', '/intentar', 'Intenta realizar una acción RP con resultado aleatorio (Éxito/Fallo).', {
+        { name = 'acción', help = 'Acción que intentas realizar' }
+    })
+    TriggerEvent('chat:addSuggestion', '/armor', 'Asigna chaleco antibalas (0-100) a un jugador.', {
+        { name = 'id', help = 'ID del jugador (opcional)' },
+        { name = 'cantidad', help = 'Porcentaje 0-100' }
+    })
+    TriggerEvent('chat:addSuggestion', '/spec', 'Observa en modo espectador a un jugador (sin ID para salir).', {
+        { name = 'id', help = 'ID del jugador objetivo' }
+    })
+    TriggerEvent('chat:addSuggestion', '/setplate', 'Cambia la matrícula del vehículo actual en mundo y base de datos.', {
+        { name = 'matrícula', help = 'Nueva matrícula (máx. 8 caracteres)' }
+    })
+    TriggerEvent('chat:addSuggestion', '/admins', 'Muestra la lista del staff conectado.')
+    TriggerEvent('chat:addSuggestion', '/players', 'Muestra la lista y conteo de jugadores conectados.')
 end)

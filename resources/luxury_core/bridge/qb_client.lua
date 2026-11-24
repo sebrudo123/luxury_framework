@@ -60,18 +60,55 @@ end
 
 -- Sincronizar datos QBCore al recibir actualización de Core
 RegisterNetEvent('luxury:client:update', function(data)
+    local meta = data.metadata or {}
+    local jobData = data.job or {}
+    local gangData = data.gang or {}
+
     QBCore.PlayerData = {
         citizenid = data.citizenid or '',
-        money = { cash = data.cash or 0, bank = data.bank or 0 },
-        job = data.job or {},
+        money = {
+            cash = data.cash or 0,
+            bank = data.bank or 0,
+            crypto = data.crypto or 0,
+            black_money = data.black_money or 0
+        },
+        job = {
+            name = jobData.name or 'unemployed',
+            label = jobData.label or 'Desempleado',
+            payment = jobData.salary or 0,
+            onduty = jobData.onduty ~= false,
+            isboss = jobData.isBoss == true,
+            grade = {
+                level = jobData.grade or 0,
+                name = jobData.grade_label or 'Rango 0'
+            }
+        },
+        gang = {
+            name = gangData.name or 'none',
+            label = gangData.label or 'Ninguna',
+            isboss = gangData.isBoss == true,
+            grade = {
+                level = gangData.grade or 0,
+                name = gangData.grade_label or 'Sin banda'
+            }
+        },
         charinfo = data.charinfo or {},
         metadata = {
             hunger = data.needs and data.needs.hunger or 100,
-            thirst = data.needs and data.needs.thirst or 100
+            thirst = data.needs and data.needs.thirst or 100,
+            isdead = meta.isdead == true,
+            inlaststand = meta.inlaststand == true,
+            injail = meta.injail or 0,
+            armor = meta.armor or 0,
+            stress = meta.stress or 0,
+            handcuffed = meta.handcuffed == true,
+            callsign = meta.callsign or 'NO-CALLSIGN'
         }
     }
 
-    TriggerEvent('QBCore:Client:OnJobUpdate', data.job)
+    TriggerEvent('QBCore:Client:OnJobUpdate', QBCore.PlayerData.job)
+    TriggerEvent('QBCore:Client:OnGangUpdate', QBCore.PlayerData.gang)
+    TriggerEvent('QBCore:Player:SetPlayerData', QBCore.PlayerData)
 end)
 
 RegisterNetEvent('QBCore:Notify', function(text, notifyType, length)

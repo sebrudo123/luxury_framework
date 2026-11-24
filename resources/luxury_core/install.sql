@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS `luxury_players` (
     `name` VARCHAR(100) DEFAULT NULL,
     `cash` INT NOT NULL DEFAULT 500,
     `bank` INT NOT NULL DEFAULT 5000,
+    `black_money` INT NOT NULL DEFAULT 0,
+    `crypto` INT NOT NULL DEFAULT 0,
     `job` VARCHAR(50) NOT NULL DEFAULT 'unemployed',
     `job_grade` INT NOT NULL DEFAULT 0,
     `gang` VARCHAR(50) NOT NULL DEFAULT 'none',
@@ -69,6 +71,22 @@ INSERT IGNORE INTO `luxury_societies` (`name`, `label`, `money`) VALUES
 ('taxi', 'Downtown Cab Co.', 50000),
 ('cardealer', 'Luxury Autos Dealership', 500000),
 ('realestate', 'Century 21 Real Estate', 300000);
+
+-- Tabla legacy ESX owned_vehicles para compatibilidad total con scripts clásicos
+CREATE TABLE IF NOT EXISTS `owned_vehicles` (
+  `owner` VARCHAR(60) NOT NULL,
+  `plate` VARCHAR(12) NOT NULL,
+  `vehicle` LONGTEXT DEFAULT NULL,
+  `type` VARCHAR(20) NOT NULL DEFAULT 'car',
+  `job` VARCHAR(20) DEFAULT NULL,
+  `stored` TINYINT(1) NOT NULL DEFAULT 0,
+  `parking` VARCHAR(60) DEFAULT NULL,
+  `pound` VARCHAR(60) DEFAULT NULL,
+  `glovebox` LONGTEXT DEFAULT NULL,
+  `trunk` LONGTEXT DEFAULT NULL,
+  PRIMARY KEY (`plate`),
+  KEY `idx_owned_owner` (`owner`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ====================================================================
 -- TABLAS OFICIALES DE COMPATIBILIDAD CON JG-ADVANCEDGARAGES V4

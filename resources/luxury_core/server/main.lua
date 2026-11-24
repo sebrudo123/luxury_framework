@@ -15,6 +15,8 @@ function Core.RunDatabaseMigrations()
             `name` VARCHAR(100) DEFAULT NULL,
             `cash` INT NOT NULL DEFAULT 500,
             `bank` INT NOT NULL DEFAULT 5000,
+            `black_money` INT NOT NULL DEFAULT 0,
+            `crypto` INT NOT NULL DEFAULT 0,
             `job` VARCHAR(50) NOT NULL DEFAULT 'unemployed',
             `job_grade` INT NOT NULL DEFAULT 0,
             `gang` VARCHAR(50) NOT NULL DEFAULT 'none',
@@ -43,6 +45,8 @@ function Core.RunDatabaseMigrations()
             ADD COLUMN IF NOT EXISTS `needs` VARCHAR(100) DEFAULT '{"hunger":100,"thirst":100}',
             ADD COLUMN IF NOT EXISTS `gang` VARCHAR(50) NOT NULL DEFAULT 'none',
             ADD COLUMN IF NOT EXISTS `gang_grade` INT NOT NULL DEFAULT 0,
+            ADD COLUMN IF NOT EXISTS `black_money` INT NOT NULL DEFAULT 0,
+            ADD COLUMN IF NOT EXISTS `crypto` INT NOT NULL DEFAULT 0,
             ADD COLUMN IF NOT EXISTS `metadata` LONGTEXT DEFAULT NULL,
             ADD COLUMN IF NOT EXISTS `inventory` LONGTEXT DEFAULT NULL;
         ]])
@@ -328,6 +332,34 @@ function Core.RunDatabaseMigrations()
         );
     ]])
     print('^5[LUXURY-DATABASE]^7 Tablas e interiores de ^3jg-advancedgarages v4^7 verificadas y listas.')
+
+    -- 6) Tabla legacy ESX owned_vehicles para compatibilidad con scripts ESX clásicos
+    MySQL.query.await([[
+        CREATE TABLE IF NOT EXISTS `owned_vehicles` (
+            `owner` VARCHAR(60) NOT NULL,
+            `plate` VARCHAR(12) NOT NULL,
+            `vehicle` LONGTEXT DEFAULT NULL,
+            `type` VARCHAR(20) NOT NULL DEFAULT 'car',
+            `job` VARCHAR(20) DEFAULT NULL,
+            `stored` TINYINT(1) NOT NULL DEFAULT 0,
+            `parking` VARCHAR(60) DEFAULT NULL,
+            `pound` VARCHAR(60) DEFAULT NULL,
+            `glovebox` LONGTEXT DEFAULT NULL,
+            `trunk` LONGTEXT DEFAULT NULL,
+            PRIMARY KEY (`plate`),
+            KEY `idx_owned_owner` (`owner`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ]])
+    print('^5[LUXURY-DATABASE]^7 Tabla ^3`owned_vehicles`^7 (compatibilidad ESX legacy) verificada.')
+
+    -- 7) Auto-limpieza de registros históricos en luxury_logs
+    local retentionDays = tonumber(Config.LogsRetentionDays) or 30
+    if retentionDays > 0 then
+        pcall(function()
+            MySQL.query('DELETE FROM `luxury_logs` WHERE `created_at` < DATE_SUB(NOW(), INTERVAL ? DAY)', { retentionDays })
+        end)
+    end
+
     return true
 end
 
@@ -369,33 +401,59 @@ AddEventHandler('playerConnecting', function(playerName, setKickReason, deferral
 end)
 
 ---------------------------------------------------------------------
--- Bucle de Nóminas y Salarios (Paycheck)
+-- Bucle de Nóminas y Salarios (Paycheck con control onduty)
 ---------------------------------------------------------------------
 CreateThread(function()
     while true do
         Wait((Config.PaycheckInterval or 10) * 60 * 1000)
         for src, player in pairs(Core.Players) do
             local salary = player.job.salary or 0
-            if salary > 0 then
-                player:addMoney('bank', salary)
+            local requireDuty = Config.PaycheckRequireDuty ~= false and player.job.name ~= 'unemployed'
+            local isOnDuty = player:isOnDuty()
+
+            if salary > 0 and (not requireDuty or isOnDuty) then
+                player:addMoney('bank', salary, 'Nómina automática')
                 if Config.PaycheckNotification then
                     TriggerClientEvent('chat:addMessage', src, {
                         args = { '^2[Nómina]^7', ('Has recibido tu sueldo de ^2$%d^7 en el banco (%s - %s).'):format(salary, player.job.label, player.job.grade_label) }
                     })
                 end
+            elseif salary > 0 and requireDuty and not isOnDuty and Config.PaycheckNotification then
+                TriggerClientEvent('chat:addMessage', src, {
+                    args = { '^3[Nómina]^7', 'No recibiste salario por encontrarte ^1fuera de servicio^7 (/duty).' }
+                })
             end
         end
     end
 end)
 
 ---------------------------------------------------------------------
--- Bucle de Autoguardado Periódico y Cierre del Recurso
+-- Bucle de Autoguardado Escalonado por Lotes y Limpieza Periódica
 ---------------------------------------------------------------------
 CreateThread(function()
+    local cycleCount = 0
     while true do
         Wait((Config.AutoSaveMinutes or 5) * 60 * 1000)
+        cycleCount = cycleCount + 1
+
+        local batchSize = Config.AutoSaveBatchSize or 10
+        local count = 0
         for _, player in pairs(Core.Players) do
             player:save(true)
+            count = count + 1
+            if count % batchSize == 0 then
+                Wait(100)
+            end
+        end
+
+        -- Cada 12 ciclos (~1h), purgar logs antiguos
+        if cycleCount % 12 == 0 then
+            local retentionDays = tonumber(Config.LogsRetentionDays) or 30
+            if retentionDays > 0 then
+                pcall(function()
+                    MySQL.query('DELETE FROM `luxury_logs` WHERE `created_at` < DATE_SUB(NOW(), INTERVAL ? DAY)', { retentionDays })
+                end)
+            end
         end
     end
 end)

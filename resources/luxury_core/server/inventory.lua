@@ -105,6 +105,41 @@ function Inventory.ClearInventory(src)
     return exports.ox_inventory:ClearInventory(src)
 end
 
+---------------------------------------------------------------------
+-- Registro Unificado de Ítems Usables (ESX / QBCore / ox_inventory)
+---------------------------------------------------------------------
+Core = Core or {}
+Core.UsableItems = Core.UsableItems or {}
+
+function Core.CreateUsableItem(itemName, cb)
+    if not itemName or type(cb) ~= 'function' then return end
+    Core.UsableItems[itemName] = cb
+end
+
+function Core.UseItem(src, itemName, itemData, ...)
+    local cb = Core.UsableItems[itemName]
+    if not cb then return false end
+    local ok, err = pcall(cb, src, itemData, ...)
+    if not ok then
+        print(('[^1ERROR^7] Fallo ejecutando ítem usable "%s": %s'):format(tostring(itemName), tostring(err)))
+    end
+    return ok
+end
+
+-- Puente de uso con ox_inventory y eventos internos
+AddEventHandler('ox_inventory:usedItem', function(playerId, name, slotId, metadata)
+    if Core.UsableItems[name] then
+        Core.UseItem(playerId, name, { name = name, slot = slotId, metadata = metadata, info = metadata })
+    end
+end)
+
+RegisterNetEvent('luxury:server:useItem', function(itemName, itemData)
+    local src = source
+    if Core.Players[src] and Core.UsableItems[itemName] then
+        Core.UseItem(src, itemName, itemData)
+    end
+end)
+
 -- Exports del servidor para que cualquier recurso pueda interactuar con el inventario
 exports('AddItem', Inventory.AddItem)
 exports('RemoveItem', Inventory.RemoveItem)
@@ -113,3 +148,5 @@ exports('HasItem', Inventory.HasItem)
 exports('CanCarryItem', Inventory.CanCarryItem)
 exports('GetInventory', Inventory.GetInventory)
 exports('ClearInventory', Inventory.ClearInventory)
+exports('CreateUsableItem', Core.CreateUsableItem)
+exports('UseItem', Core.UseItem)

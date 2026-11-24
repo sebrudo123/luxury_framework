@@ -67,11 +67,14 @@ RegisterNetEvent('luxury:client:update', function(data)
     ESX.PlayerData.identifier = data.citizenid or ''
     ESX.PlayerData.accounts = {
         { name = 'cash', money = data.cash or 0, label = 'Efectivo' },
-        { name = 'bank', money = data.bank or 0, label = 'Banco' }
+        { name = 'bank', money = data.bank or 0, label = 'Banco' },
+        { name = 'black_money', money = data.black_money or 0, label = 'Dinero Negro' }
     }
     ESX.PlayerData.money = data.cash or 0
     ESX.PlayerData.job = data.job or {}
+    ESX.PlayerData.gang = data.gang or {}
     ESX.PlayerData.charinfo = data.charinfo or {}
+    ESX.PlayerData.metadata = data.metadata or {}
 
     TriggerEvent('esx:setJob', ESX.PlayerData.job)
 end)

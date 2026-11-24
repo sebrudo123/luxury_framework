@@ -66,7 +66,8 @@ function GetJobInfo(jobName, grade)
             grade_name = gradeData and gradeData.name or tostring(grade),
             grade_label = gradeData and gradeData.label or ('Rango ' .. grade),
             salary = gradeData and gradeData.salary or 150,
-            isBoss = gradeData and gradeData.isBoss or false
+            isBoss = gradeData and gradeData.isBoss or false,
+            defaultDuty = job.defaultDuty ~= false
         }
     else
         -- Fallback dinámico para scripts de terceros o trabajos no predefinidos en Jobs
@@ -78,7 +79,8 @@ function GetJobInfo(jobName, grade)
             grade_name = tostring(grade),
             grade_label = 'Rango ' .. grade,
             salary = 200,
-            isBoss = (grade >= 3)
+            isBoss = (grade >= 3),
+            defaultDuty = true
         }
     end
 end

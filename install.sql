@@ -12,6 +12,8 @@ CREATE TABLE IF NOT EXISTS `luxury_players` (
     `name` VARCHAR(100) DEFAULT NULL,
     `cash` INT NOT NULL DEFAULT 500,
     `bank` INT NOT NULL DEFAULT 5000,
+    `black_money` INT NOT NULL DEFAULT 0,
+    `crypto` INT NOT NULL DEFAULT 0,
     `job` VARCHAR(50) NOT NULL DEFAULT 'unemployed',
     `job_grade` INT NOT NULL DEFAULT 0,
     `gang` VARCHAR(50) NOT NULL DEFAULT 'none',
@@ -335,4 +337,21 @@ CREATE TABLE IF NOT EXISTS `garage_settings` (
   `updated_by_identifier` VARCHAR(255) DEFAULT NULL,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- Tabla legacy ESX owned_vehicles para compatibilidad con scripts clásicos
+CREATE TABLE IF NOT EXISTS `owned_vehicles` (
+  `owner` VARCHAR(60) NOT NULL,
+  `plate` VARCHAR(12) NOT NULL,
+  `vehicle` LONGTEXT DEFAULT NULL,
+  `type` VARCHAR(20) NOT NULL DEFAULT 'car',
+  `job` VARCHAR(20) DEFAULT NULL,
+  `stored` TINYINT(1) NOT NULL DEFAULT 0,
+  `parking` VARCHAR(60) DEFAULT NULL,
+  `pound` VARCHAR(60) DEFAULT NULL,
+  `glovebox` LONGTEXT DEFAULT NULL,
+  `trunk` LONGTEXT DEFAULT NULL,
+  PRIMARY KEY (`plate`),
+  KEY `idx_owned_owner` (`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

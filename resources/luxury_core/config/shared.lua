@@ -1,9 +1,17 @@
 -- luxury_core: Configuración Compartida (Cliente y Servidor)
 Config = Config or {}
 
--- Dinero inicial de un personaje nuevo
+-- Dinero inicial de un personaje nuevo y cuentas soportadas
 Config.StartCash = 500
 Config.StartBank = 2500
+Config.StartBlackMoney = 0
+Config.StartCrypto = 0
+Config.Accounts = {
+    cash = { label = 'Efectivo' },
+    bank = { label = 'Banco' },
+    black_money = { label = 'Dinero Negro' },
+    crypto = { label = 'Cripto' }
+}
 
 -- Trabajo y Banda predeterminados
 Config.DefaultJob = { name = 'unemployed', grade = 0 }

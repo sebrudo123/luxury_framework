@@ -11,7 +11,16 @@ CreateThread(function()
         if LocalPlayer.state.isLoggedIn then
             if IsEntityDead(ped) and not isDead then
                 isDead = true
-                TriggerServerEvent('luxury:server:setDeadState', true)
+                local killerEntity = GetPedSourceOfDeath(ped)
+                local killerServerId = nil
+                if killerEntity and killerEntity ~= 0 and IsEntityAPed(killerEntity) and IsPedAPlayer(killerEntity) then
+                    local killerPlayerIdx = NetworkGetPlayerIndexFromPed(killerEntity)
+                    if killerPlayerIdx ~= -1 then
+                        killerServerId = GetPlayerServerId(killerPlayerIdx)
+                    end
+                end
+                local weaponHash = GetPedCauseOfDeath(ped)
+                TriggerServerEvent('luxury:server:setDeadState', true, killerServerId, weaponHash)
                 StartDeathSequence()
             end
         end

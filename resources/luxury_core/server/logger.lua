@@ -83,6 +83,75 @@ function Logger.LogAdminCommand(src, commandName, args)
     Logger.SendWebhook(Webhooks and Webhooks.Admin, '🛠️ COMANDO ADMINISTRATIVO EJECUTADO', 'Registro de auditoría de moderación.', Colors.Blue, fields)
 end
 
+--- Registra conexiones y desconexiones de jugadores
+function Logger.LogConnection(name, license, action, reason)
+    local fields = {
+        { name = 'Jugador', value = tostring(name or 'Desconocido'), inline = true },
+        { name = 'Licencia', value = tostring(license or 'N/A'), inline = true },
+        { name = 'Evento', value = tostring(action or 'N/A'), inline = true }
+    }
+    if reason and reason ~= '' then
+        fields[#fields + 1] = { name = 'Detalle', value = '```' .. tostring(reason) .. '```', inline = false }
+    end
+    local color = action == 'Desconexión' and Colors.Orange or Colors.Green
+    Logger.SendWebhook(Webhooks and Webhooks.Connections, 'REGISTRO DE CONEXIÓN', 'Movimiento de sesión en el servidor.', color, fields)
+end
+
+--- Registra muertes y bajas entre jugadores o por entorno
+function Logger.LogDeath(victimName, victimLicense, killerName, killerLicense, weaponName, distance)
+    local fields = {
+        { name = 'Víctima', value = ('%s (%s)'):format(victimName or 'N/A', victimLicense or 'N/A'), inline = false },
+        { name = 'Atacante', value = killerName and ('%s (%s)'):format(killerName, killerLicense or 'N/A') or 'Entorno / Caída / Suicidio', inline = false },
+        { name = 'Arma / Causa', value = tostring(weaponName or 'Desconocida'), inline = true },
+        { name = 'Distancia', value = distance and ('%.1fm'):format(distance) or 'N/A', inline = true }
+    }
+    Logger.SendWebhook(Webhooks and Webhooks.Deaths, 'REGISTRO DE MUERTE', 'Incidente médico / combate registrado.', Colors.Red, fields)
+end
+
+--- Registra movimientos económicos auditados
+function Logger.LogEconomy(src, account, amount, action, details)
+    local player = Core.Players[src]
+    local name = src == 0 and 'Sistema' or (player and player.name or GetPlayerName(src) or 'Desconocido')
+    local fields = {
+        { name = 'Jugador', value = ('%s (ID: %s)'):format(name, tostring(src)), inline = true },
+        { name = 'Cuenta', value = tostring(account), inline = true },
+        { name = 'Monto', value = ('$%s'):format(tostring(amount)), inline = true },
+        { name = 'Operación', value = tostring(action), inline = false }
+    }
+    if details then
+        fields[#fields + 1] = { name = 'Detalles', value = '```' .. tostring(details) .. '```', inline = false }
+    end
+    Logger.SendWebhook(Webhooks and Webhooks.Money, 'AUDITORÍA ECONÓMICA', 'Transacción registrada en el núcleo.', Colors.Green, fields)
+end
+
+--- Registra mensajes de chat RP y redes sociales
+function Logger.LogChat(src, channel, msg)
+    local player = Core.Players[src]
+    local name = player and player.name or GetPlayerName(src) or 'Desconocido'
+    local fields = {
+        { name = 'Jugador', value = ('%s (ID: %d | %s)'):format(name, src, player and player.citizenid or 'N/A'), inline = true },
+        { name = 'Canal', value = tostring(channel), inline = true },
+        { name = 'Mensaje', value = '```' .. tostring(msg) .. '```', inline = false }
+    }
+    Logger.SendWebhook(Webhooks and Webhooks.Chat, 'REGISTRO DE CHAT RP', 'Actividad de conversación y roleplay.', Colors.Purple, fields)
+end
+
+--- Registra reportes enviados por jugadores al staff
+function Logger.LogReport(src, msg)
+    local player = Core.Players[src]
+    local name = player and player.name or GetPlayerName(src) or 'Desconocido'
+    local fields = {
+        { name = 'Reportante', value = ('%s (ID: %d | %s)'):format(name, src, player and player.license or 'N/A'), inline = false },
+        { name = 'Descripción', value = '```' .. tostring(msg) .. '```', inline = false }
+    }
+    Logger.SendWebhook(Webhooks and Webhooks.Reports, 'NUEVO REPORTE DE JUGADOR', 'Solicitud de asistencia administrativa.', Colors.Orange, fields)
+end
+
 exports('LogBan', Logger.LogBan)
 exports('LogAnticheat', Logger.LogAnticheat)
 exports('LogAdminCommand', Logger.LogAdminCommand)
+exports('LogConnection', Logger.LogConnection)
+exports('LogDeath', Logger.LogDeath)
+exports('LogEconomy', Logger.LogEconomy)
+exports('LogChat', Logger.LogChat)
+exports('LogReport', Logger.LogReport)

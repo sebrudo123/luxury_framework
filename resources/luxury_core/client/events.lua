@@ -10,7 +10,7 @@ CreateThread(function()
 end)
 
 -- Manejo de Spawn y teletransporte a coordenadas guardadas con carga de colisiones
-RegisterNetEvent('luxury:client:spawnPlayer', function(coords)
+RegisterNetEvent('luxury:client:spawnPlayer', function(coords, savedArmor)
     local ped = PlayerPedId()
     coords = coords or Config.DefaultSpawn
 
@@ -26,6 +26,9 @@ RegisterNetEvent('luxury:client:spawnPlayer', function(coords)
     end
 
     FreezeEntityPosition(ped, false)
+    if savedArmor and tonumber(savedArmor) and tonumber(savedArmor) > 0 then
+        SetPedArmour(ped, math.min(100, math.floor(tonumber(savedArmor))))
+    end
     isSpawned = true
 end)
 

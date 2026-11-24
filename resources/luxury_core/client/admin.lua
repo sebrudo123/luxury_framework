@@ -34,6 +34,79 @@ RegisterNetEvent('luxury:admin:clientHeal', function()
     end
 end)
 
+--- Ajustar armadura del jugador local
+RegisterNetEvent('luxury:admin:clientArmor', function(amount)
+    local ped = PlayerPedId()
+    SetPedArmour(ped, math.max(0, math.min(100, tonumber(amount) or 100)))
+end)
+
+--- Espectear a otro jugador o salir del modo espectador
+local isSpectating = false
+local preSpectateCoords = nil
+
+RegisterNetEvent('luxury:admin:clientSpectate', function(targetServerId, targetCoords)
+    local ped = PlayerPedId()
+
+    if not targetServerId then
+        if isSpectating then
+            NetworkSetInSpectatorMode(false, ped)
+            SetEntityVisible(ped, true, false)
+            FreezeEntityPosition(ped, false)
+            SetEntityInvincible(ped, false)
+            if preSpectateCoords then
+                SetEntityCoordsNoOffset(ped, preSpectateCoords.x, preSpectateCoords.y, preSpectateCoords.z, false, false, false)
+                preSpectateCoords = nil
+            end
+            isSpectating = false
+            LocalPlayer.state:set('luxury:spectating', false, false)
+            TriggerEvent('chat:addMessage', { args = { '^2[Espectador]^7', 'Has salido del modo espectador.' } })
+        else
+            TriggerEvent('chat:addMessage', { args = { '^3[Espectador]^7', 'Uso: ^3/spec [id]^7' } })
+        end
+        return
+    end
+
+    if not isSpectating then
+        preSpectateCoords = GetEntityCoords(ped)
+    end
+
+    isSpectating = true
+    LocalPlayer.state:set('luxury:spectating', true, false)
+    FreezeEntityPosition(ped, true)
+    SetEntityVisible(ped, false, false)
+    SetEntityInvincible(ped, true)
+
+    if targetCoords then
+        SetEntityCoordsNoOffset(ped, targetCoords.x, targetCoords.y, targetCoords.z + 10.0, false, false, false)
+        RequestCollisionAtCoord(targetCoords.x, targetCoords.y, targetCoords.z)
+    end
+
+    Wait(250)
+    local playerIdx = GetPlayerFromServerId(targetServerId)
+    local targetPed = playerIdx ~= -1 and GetPlayerPed(playerIdx) or 0
+    if targetPed ~= 0 and DoesEntityExist(targetPed) then
+        NetworkSetInSpectatorMode(true, targetPed)
+    end
+end)
+
+--- Cambiar matrícula del vehículo actual
+RegisterNetEvent('luxury:admin:clientSetPlate', function(newPlate)
+    local ped = PlayerPedId()
+    local veh = GetVehiclePedIsIn(ped, false)
+    if veh == 0 then
+        local coords = GetEntityCoords(ped)
+        veh = GetClosestVehicle(coords.x, coords.y, coords.z, 5.0, 0, 71)
+    end
+
+    if veh == 0 or not DoesEntityExist(veh) then
+        return TriggerEvent('chat:addMessage', { args = { '^1[Error]^7', 'Debes estar dentro o cerca de un vehículo.' } })
+    end
+
+    local oldPlate = GetVehicleNumberPlateText(veh)
+    SetVehicleNumberPlateText(veh, newPlate)
+    TriggerServerEvent('luxury:admin:updateVehiclePlateDB', oldPlate, newPlate)
+end)
+
 --- Teletransporte seguro con colisión
 RegisterNetEvent('luxury:admin:teleport', function(coords)
     local ped = PlayerPedId()

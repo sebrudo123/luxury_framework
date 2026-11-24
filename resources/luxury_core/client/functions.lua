@@ -70,9 +70,10 @@ function Functions.DrawText3D(x, y, z, text, r, g, b, a)
 end
 
 ---------------------------------------------------------------------
--- Sistema de Texto Flotante Sobre la Cabeza (/me y /do 3D)
+-- Sistema de Texto Flotante 3D (/me, /do, Anti-Combat Log) y Alertas 911
 ---------------------------------------------------------------------
 local activeOverheadTexts = {}
+local activeCombatLogs = {}
 
 RegisterNetEvent('luxury:client:show3DText', function(targetServerId, text, msgType)
     local playerIdx = GetPlayerFromServerId(targetServerId)
@@ -90,13 +91,44 @@ RegisterNetEvent('luxury:client:show3DText', function(targetServerId, text, msgT
     }
 end)
 
+RegisterNetEvent('luxury:client:combatLogMarker', function(info)
+    if not info or not info.coords then return end
+    local localCoords = GetEntityCoords(PlayerPedId())
+    local dropPos = vector3(info.coords.x + 0.0, info.coords.y + 0.0, info.coords.z + 0.0)
+    if #(localCoords - dropPos) > 60.0 then return end
+
+    activeCombatLogs[#activeCombatLogs + 1] = {
+        coords = dropPos,
+        text = ('[DESCONEXIÓN] %s (ID: %d | %s)\nMotivo: %s'):format(
+            info.name or 'Jugador', info.id or 0, info.citizenid or 'N/A', info.reason or 'Desconocido'
+        ),
+        expiresAt = GetGameTimer() + (info.duration or 45000)
+    }
+end)
+
+RegisterNetEvent('luxury:client:dispatchAlert', function(coords, title)
+    if not coords then return end
+    local blip = AddBlipForCoord(coords.x + 0.0, coords.y + 0.0, coords.z + 0.0)
+    SetBlipSprite(blip, 161)
+    SetBlipScale(blip, 1.2)
+    SetBlipColour(blip, 1)
+    SetBlipAsShortRange(blip, false)
+    BeginTextCommandSetBlipName('STRING')
+    AddTextComponentString(title or 'Alerta 911')
+    EndTextCommandSetBlipName(blip)
+    SetTimeout(60000, function()
+        if DoesBlipExist(blip) then RemoveBlip(blip) end
+    end)
+end)
+
 CreateThread(function()
     while true do
         local sleep = 500
         local now = GetGameTimer()
         local count = #activeOverheadTexts
+        local combatCount = #activeCombatLogs
 
-        if count > 0 then
+        if count > 0 or combatCount > 0 then
             sleep = 0
             local localPed = PlayerPedId()
             local localCoords = GetEntityCoords(localPed)
@@ -118,6 +150,15 @@ CreateThread(function()
                             Functions.DrawText3D(pedCoords.x, pedCoords.y, pedCoords.z + zOffset, entry.text, entry.color[1], entry.color[2], entry.color[3], entry.color[4])
                         end
                     end
+                end
+            end
+
+            for i = combatCount, 1, -1 do
+                local cEntry = activeCombatLogs[i]
+                if now > cEntry.expiresAt then
+                    table.remove(activeCombatLogs, i)
+                elseif #(localCoords - cEntry.coords) <= 35.0 then
+                    Functions.DrawText3D(cEntry.coords.x, cEntry.coords.y, cEntry.coords.z + 0.4, cEntry.text, 248, 113, 113, 235)
                 end
             end
         end

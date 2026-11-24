@@ -22,7 +22,8 @@ local function buildXPlayer(player)
         grade = player.job.grade,
         grade_name = gradeData.name or 'default',
         grade_label = player.job.grade_label,
-        grade_salary = player.job.salary
+        grade_salary = player.job.salary,
+        onduty = player.job.onduty ~= false
     }
 
     self.coords = player:getCoords()
@@ -46,18 +47,20 @@ local function buildXPlayer(player)
 
     function self.getAccount(account)
         local accName = account == 'money' and 'cash' or account
+        local labels = { cash = 'Efectivo', bank = 'Banco', black_money = 'Dinero Negro', crypto = 'Cripto' }
         return {
             name = account,
             money = player:getMoney(accName),
             round = true,
-            label = accName == 'cash' and 'Efectivo' or 'Banco'
+            label = labels[accName] or account
         }
     end
 
     function self.getAccounts()
         return {
             self.getAccount('cash'),
-            self.getAccount('bank')
+            self.getAccount('bank'),
+            self.getAccount('black_money')
         }
     end
 
@@ -92,10 +95,21 @@ local function buildXPlayer(player)
                 grade = updatedJob.grade,
                 grade_name = gData.name or 'default',
                 grade_label = updatedJob.grade_label,
-                grade_salary = updatedJob.salary
+                grade_salary = updatedJob.salary,
+                onduty = updatedJob.onduty ~= false
             }
         end
         return success
+    end
+
+    function self.setDuty(state)
+        local newState = player:setDuty(state)
+        self.job.onduty = newState
+        return newState
+    end
+
+    function self.getDuty()
+        return player:isOnDuty()
     end
 
     -- Métodos de Inventario (Delegados al puente ox_inventory)
@@ -142,7 +156,7 @@ local function buildXPlayer(player)
     end
 
     function self.canCarryItem(name, count)
-        return true -- Compatible con el cálculo de peso de ox_inventory
+        return player:canCarryItem(name, count or 1)
     end
 
     function self.getWeight()
@@ -256,6 +270,12 @@ end)
 
 function ESX.ShowNotification(src, msg, nType)
     TriggerClientEvent('esx:showNotification', src, msg, nType)
+end
+
+function ESX.RegisterUsableItem(item, cb)
+    if Core and Core.CreateUsableItem then
+        Core.CreateUsableItem(item, cb)
+    end
 end
 
 -- Handlers de evento clásicos para scripts ESX antiguos

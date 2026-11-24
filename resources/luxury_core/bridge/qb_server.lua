@@ -12,6 +12,7 @@ QBCore.Shared = {
 ---------------------------------------------------------------------
 local function buildQPlayer(player)
     local self = {}
+    local meta = player.metadata or {}
     self.PlayerData = {
         source = player.source,
         citizenid = player.citizenid,
@@ -21,13 +22,14 @@ local function buildQPlayer(player)
         money = {
             cash = player.cash,
             bank = player.bank,
-            crypto = 0
+            crypto = player.crypto or 0,
+            black_money = player.black_money or 0
         },
         job = {
             name = player.job.name,
             label = player.job.label,
             payment = player.job.salary,
-            onduty = true,
+            onduty = player.job.onduty ~= false,
             isboss = player.job.isBoss,
             grade = {
                 level = player.job.grade,
@@ -35,16 +37,24 @@ local function buildQPlayer(player)
             }
         },
         gang = {
-            name = 'none',
-            label = 'Ninguna',
-            isboss = false,
-            grade = { level = 0, name = 'none' }
+            name = player.gang and player.gang.name or 'none',
+            label = player.gang and player.gang.label or 'Ninguna',
+            isboss = player.gang and player.gang.isBoss or false,
+            grade = {
+                level = player.gang and player.gang.grade or 0,
+                name = player.gang and player.gang.grade_label or 'none'
+            }
         },
         metadata = {
             hunger = player.needs.hunger,
             thirst = player.needs.thirst,
-            isdead = false,
-            inlaststand = false
+            isdead = meta.isdead == true,
+            inlaststand = meta.inlaststand == true,
+            injail = meta.injail or 0,
+            armor = meta.armor or 0,
+            stress = meta.stress or 0,
+            handcuffed = meta.handcuffed == true,
+            callsign = meta.callsign or 'NO-CALLSIGN'
         },
         items = player:getInventory() or {}
     }
@@ -56,15 +66,27 @@ local function buildQPlayer(player)
     end
 
     function self.Functions.AddMoney(account, amount, reason)
-        return player:addMoney(account, amount)
+        local ok = player:addMoney(account, amount, reason)
+        if ok then
+            self.PlayerData.money[account] = player:getMoney(account)
+        end
+        return ok
     end
 
     function self.Functions.RemoveMoney(account, amount, reason)
-        return player:removeMoney(account, amount)
+        local ok = player:removeMoney(account, amount, reason)
+        if ok then
+            self.PlayerData.money[account] = player:getMoney(account)
+        end
+        return ok
     end
 
     function self.Functions.SetMoney(account, amount, reason)
-        return player:setMoney(account, amount)
+        local ok = player:setMoney(account, amount, reason)
+        if ok then
+            self.PlayerData.money[account] = player:getMoney(account)
+        end
+        return ok
     end
 
     function self.Functions.GetItemByName(item)
@@ -85,24 +107,55 @@ local function buildQPlayer(player)
     end
 
     function self.Functions.SetJob(jobName, grade)
-        return player:setJob(jobName, grade)
+        local ok = player:setJob(jobName, grade)
+        if ok then
+            self.PlayerData.job = {
+                name = player.job.name,
+                label = player.job.label,
+                payment = player.job.salary,
+                onduty = player.job.onduty ~= false,
+                isboss = player.job.isBoss,
+                grade = { level = player.job.grade, name = player.job.grade_label }
+            }
+        end
+        return ok
+    end
+
+    function self.Functions.SetJobDuty(onDuty)
+        local state = player:setDuty(onDuty)
+        self.PlayerData.job.onduty = state
+        return state
     end
 
     function self.Functions.SetGang(gangName, grade)
-        self.PlayerData.gang.name = gangName
-        self.PlayerData.gang.grade.level = tonumber(grade) or 0
-        return true
+        local ok = player:setGang(gangName, grade)
+        if ok then
+            self.PlayerData.gang = {
+                name = player.gang.name,
+                label = player.gang.label,
+                isboss = player.gang.isBoss,
+                grade = { level = player.gang.grade, name = player.gang.grade_label }
+            }
+        end
+        return ok
     end
 
     function self.Functions.SetMetaData(key, val)
         self.PlayerData.metadata[key] = val
-        if key == 'hunger' then player:setNeed('hunger', val) end
-        if key == 'thirst' then player:setNeed('thirst', val) end
+        if key == 'hunger' then
+            player:setNeed('hunger', val)
+        elseif key == 'thirst' then
+            player:setNeed('thirst', val)
+        else
+            player:setMetadata(key, val)
+        end
         return true
     end
 
     function self.Functions.GetMetaData(key)
-        return self.PlayerData.metadata[key]
+        if key == nil then return self.PlayerData.metadata end
+        if key == 'hunger' or key == 'thirst' then return player:getNeed(key) end
+        return player:getMetadata(key)
     end
 
     function self.Functions.Save()
@@ -161,6 +214,12 @@ end)
 
 function QBCore.Functions.Notify(src, text, notifyType, length)
     TriggerClientEvent('QBCore:Notify', src, text, notifyType, length)
+end
+
+function QBCore.Functions.CreateUseableItem(item, cb)
+    if Core and Core.CreateUsableItem then
+        Core.CreateUsableItem(item, cb)
+    end
 end
 
 -- Handlers de evento clásicos
