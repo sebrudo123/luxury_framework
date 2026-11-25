@@ -169,4 +169,7 @@ CreateThread(function()
     })
     TriggerEvent('chat:addSuggestion', '/admins', 'Muestra la lista del staff conectado.')
     TriggerEvent('chat:addSuggestion', '/players', 'Muestra la lista y conteo de jugadores conectados.')
+    TriggerEvent('chat:addSuggestion', '/anticheat', 'Consulta o cambia el modo de Luxury Sentinel (strict | log).', {
+        { name = 'modo', help = 'strict | log (opcional)' }
+    })
 end)

@@ -82,13 +82,21 @@ ServerInterface.GetNeed = function(src, need) return GetNeed(tonumber(src), need
 ServerInterface.BanPlayer = function(src, reason) Security.BanPlayer(tonumber(src), reason) end
 
 ---------------------------------------------------------------------
--- Registro de Interfaces en Proxy y Tunnel
+-- Registro de Interfaces en Proxy (Servidor) y Tunnel Seguro (Cliente -> Servidor)
 ---------------------------------------------------------------------
 Proxy.addInterface('luxury', ServerInterface)
 Proxy.addInterface('luxury_core', ServerInterface)
 
-Tunnel.bindInterface('luxury', ServerInterface)
-Tunnel.bindInterface('luxury_core', ServerInterface)
+-- Por seguridad, Tunnel solo expone consultas de solo lectura hacia clientes remotos.
+-- Las mutaciones (dinero, trabajos, ítems, baneos) quedan restringidas a Proxy servidor.
+local ClientTunnelSafeInterface = {
+    GetMoney = ServerInterface.GetMoney,
+    GetNeed = ServerInterface.GetNeed,
+    GetSocietyMoney = ServerInterface.GetSocietyMoney
+}
+
+Tunnel.bindInterface('luxury', ClientTunnelSafeInterface)
+Tunnel.bindInterface('luxury_core', ClientTunnelSafeInterface)
 
 --- Despachador de Proxy para llamadas que vengan a través de exports desde otros recursos
 exports('ProxyCall', function(interfaceName, methodName, ...)

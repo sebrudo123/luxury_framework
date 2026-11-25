@@ -43,10 +43,16 @@ CreateThread(function()
     end
 end)
 
--- Evento de consumo directo desde cliente u ox_inventory
+-- Evento de consumo directo desde cliente u ox_inventory (con validación anti-exploit)
 RegisterNetEvent('luxury:server:consumeNeed', function(need, amount)
     local src = source
-    AddNeed(src, need, amount)
+    if Security and not Security.CheckRateLimit(src, 'consumeNeed', 4) then return end
+    if need ~= 'hunger' and need ~= 'thirst' then return end
+
+    local num = tonumber(amount)
+    if not num or num ~= num then return end
+    num = math.max(-25.0, math.min(50.0, num))
+    AddNeed(src, need, num)
 end)
 
 exports('AddNeed', AddNeed)

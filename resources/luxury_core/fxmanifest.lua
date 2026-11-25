@@ -4,7 +4,7 @@ lua54 'yes'
 
 name 'luxury_core'
 description 'Framework base modular con arquitectura Qbox: Proxy/Tunnel, Gangs, Licencias, Buckets, blindaje Anti-Dump y Centinela Anti-Cheat'
-version '1.4.0'
+version '1.5.0'
 
 provide {
     'require',
@@ -106,6 +106,9 @@ exports {
     'LogEconomy',
     'LogChat',
     'LogReport',
+    'AddStrike',
+    'MarkTeleport',
+    'InvalidateBanCache',
 
     -- ESX Compatibility
     'getSharedObject',

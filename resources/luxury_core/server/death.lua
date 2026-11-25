@@ -3,13 +3,25 @@
 --- Manejo de reaparición tras coma médico (Bleedout)
 RegisterNetEvent('luxury:server:respawnAtHospital', function()
     local src = source
+    if Security and not Security.CheckRateLimit(src, 'respawn', 2) then return end
     local player = Core.Players[src]
     if not player then return end
+
+    -- Verificar que el jugador realmente esté marcado como muerto o con salud mínima
+    if not player:getMetadata('isdead') then
+        local ped = GetPlayerPed(src)
+        if ped ~= 0 and DoesEntityExist(ped) and GetEntityHealth(ped) > 110 then
+            if Security and Security.AddStrike then
+                Security.AddStrike(src, 'Intento de reaparición en hospital sin estar inconsciente')
+            end
+            return
+        end
+    end
 
     -- Cobrar factura médica del hospital si tiene saldo
     local fee = Config.HospitalFee or 250
     if player.bank >= fee then
-        player:removeMoney('bank', fee)
+        player:removeMoney('bank', fee, 'Factura Hospital Pillbox')
         TriggerClientEvent('chat:addMessage', src, {
             args = { '^3[Hospital]^7', ('Se te han cobrado ^1$%d^7 de tu cuenta bancaria por la atención médica.'):format(fee) }
         })
@@ -24,6 +36,10 @@ RegisterNetEvent('luxury:server:respawnAtHospital', function()
     player:setMetadata('inlaststand', false)
     if type(Player) == 'function' and Player(src) and Player(src).state then Player(src).state:set('isDead', false, true) end
 
+    if Security and Security.MarkTeleport then
+        Security.MarkTeleport(src)
+    end
+
     -- Teletransportar al hospital
     TriggerClientEvent('luxury:client:hospitalRespawn', src, Config.HospitalCoords)
     print(('^3[luxury_core]^7 Jugador %s (ID: %d) reapareció en el hospital.'):format(player.name, src))
@@ -32,10 +48,22 @@ end)
 -- Notificar estado de muerte al servidor y registrar Kill Log en Discord
 RegisterNetEvent('luxury:server:setDeadState', function(isDead, killerId, weaponHash)
     local src = source
+    if Security and not Security.CheckRateLimit(src, 'setDeadState', 4) then return end
     local player = Core.Players[src]
     if not player then return end
 
     local deadBool = isDead == true
+    -- Validación server-side anti-bypass del anticheat cliente
+    if deadBool then
+        local ped = GetPlayerPed(src)
+        if ped ~= 0 and DoesEntityExist(ped) and GetEntityHealth(ped) > 120 then
+            if Security and Security.AddStrike then
+                Security.AddStrike(src, 'Intento de falsear estado de muerte para evadir vigilancia')
+            end
+            return
+        end
+    end
+
     player:setMetadata('isdead', deadBool)
     if type(Player) == 'function' and Player(src) and Player(src).state then
         Player(src).state:set('isDead', deadBool, true)

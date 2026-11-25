@@ -210,6 +210,9 @@ function Core.LoadPlayer(src, citizenid)
     player:sync()
 
     -- Enviar spawn con armadura persistente si corresponde
+    if Security and Security.MarkTeleport then
+        Security.MarkTeleport(src)
+    end
     local savedArmor = (Config.ArmorPersistence ~= false and player.metadata and player.metadata.armor) or 0
     TriggerClientEvent('luxury:client:spawnPlayer', src, player:getCoords(), savedArmor)
 

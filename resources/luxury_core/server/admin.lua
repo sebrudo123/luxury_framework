@@ -277,6 +277,7 @@ registerAdminCommands('goto', 'mod', function(src, args)
     local targetPed = GetPlayerPed(targetId)
     if targetPed and DoesEntityExist(targetPed) then
         local coords = GetEntityCoords(targetPed)
+        if Security and Security.MarkTeleport then Security.MarkTeleport(src) end
         TriggerClientEvent('luxury:admin:teleport', src, coords)
         adminNotify(src, ('Te has teletransportado hacia ^3%s^7.'):format(target.name))
     end
@@ -287,6 +288,7 @@ registerAdminCommands('tp', 'mod', function(src, args)
     if args[1] and args[2] and args[3] then
         local x, y, z = tonumber(args[1]), tonumber(args[2]), tonumber(args[3])
         if x and y and z then
+            if Security and Security.MarkTeleport then Security.MarkTeleport(src) end
             TriggerClientEvent('luxury:admin:teleport', src, vector3(x, y, z))
             return adminNotify(src, ('Teletransportado a ^3%.2f, %.2f, %.2f^7'):format(x, y, z))
         end
@@ -300,6 +302,7 @@ registerAdminCommands('tp', 'mod', function(src, args)
         local targetPed = GetPlayerPed(targetId)
         if targetPed and DoesEntityExist(targetPed) then
             local coords = GetEntityCoords(targetPed)
+            if Security and Security.MarkTeleport then Security.MarkTeleport(src) end
             TriggerClientEvent('luxury:admin:teleport', src, coords)
             adminNotify(src, ('Teletransportado hacia ^3%s^7'):format(target.name))
         end
@@ -320,6 +323,9 @@ registerAdminCommands('bring', 'mod', function(src, args)
     local adminPed = GetPlayerPed(src)
     local coords = GetEntityCoords(adminPed)
 
+    if Security and Security.MarkTeleport then
+        Security.MarkTeleport(targetId)
+    end
     TriggerClientEvent('luxury:admin:teleport', targetId, coords)
     adminNotify(src, ('Has traído a ^3%s^7 hacia tu posición.'):format(target.name))
     adminNotify(targetId, '^3Has sido teletransportado por un administrador.^7')
@@ -480,6 +486,9 @@ registerAdminCommands('unban', 'admin', function(src, args)
 
     local affected = MySQL.update.await('DELETE FROM luxury_bans WHERE license = ? OR ip = ? OR identifiers LIKE ?', { license, license, '%' .. license .. '%' })
     if affected and affected > 0 then
+        if Security and Security.InvalidateBanCache then
+            Security.InvalidateBanCache()
+        end
         adminNotify(src, ('^2La licencia %s ha sido desbaneada.^7'):format(license))
         MySQL.insert('INSERT INTO luxury_logs (type, identifier, action) VALUES (?, ?, ?)', {
             'unban', license, ('Desbaneado por %s'):format(src == 0 and 'Consola' or GetPlayerName(src))
@@ -487,4 +496,22 @@ registerAdminCommands('unban', 'admin', function(src, args)
     else
         adminNotify(src, '^1No se encontró ningún baneo activo para esa licencia.^7')
     end
+end, true)
+
+--- /anticheat [modo: strict|log] (consulta estado o cambia modo en caliente)
+registerAdminCommands('anticheat', 'admin', function(src, args)
+    local secCfg = Config.Security or {}
+    local newMode = args[1]
+    if newMode == 'strict' or newMode == 'log' then
+        secCfg.Mode = newMode
+        Config.Security = secCfg
+        adminNotify(src, ('^2Modo de Luxury Sentinel actualizado a: ^3%s^7'):format(newMode))
+        return
+    end
+    adminNotify(src, ('Estado Sentinel: ^2%s^7 | Modo: ^3%s^7 | MaxStrikes: ^3%d^7 | RespawnGrace: ^3%ds^7'):format(
+        secCfg.Enabled ~= false and 'ACTIVO' or 'DESACTIVADO',
+        secCfg.Mode or 'strict',
+        secCfg.MaxStrikes or 3,
+        secCfg.TeleportGraceSeconds or 6
+    ))
 end, true)
