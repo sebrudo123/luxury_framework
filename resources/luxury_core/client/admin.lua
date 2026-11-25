@@ -40,6 +40,31 @@ RegisterNetEvent('luxury:admin:clientArmor', function(amount)
     SetPedArmour(ped, math.max(0, math.min(100, tonumber(amount) or 100)))
 end)
 
+--- Abatir jugador por comando administrativo /slay
+RegisterNetEvent('luxury:admin:clientSlay', function()
+    SetEntityHealth(PlayerPedId(), 0)
+end)
+
+--- Limpiar vehículos vacíos, peds NPC y objetos sueltos en un radio
+RegisterNetEvent('luxury:admin:clientClearArea', function(radius)
+    local ped = PlayerPedId()
+    local coords = GetEntityCoords(ped)
+    radius = (tonumber(radius) or 40) + 0.0
+
+    for _, veh in ipairs(GetGamePool('CVehicle')) do
+        if DoesEntityExist(veh) and #(coords - GetEntityCoords(veh)) <= radius then
+            local driver = GetPedInVehicleSeat(veh, -1)
+            if driver == 0 or not IsPedAPlayer(driver) then
+                SetEntityAsMissionEntity(veh, true, true)
+                DeleteVehicle(veh)
+            end
+        end
+    end
+
+    ClearAreaOfObjects(coords.x, coords.y, coords.z, radius, 0)
+    ClearAreaOfPeds(coords.x, coords.y, coords.z, radius, 1)
+end)
+
 --- Espectear a otro jugador o salir del modo espectador
 local isSpectating = false
 local preSpectateCoords = nil
@@ -325,6 +350,7 @@ local function repairVehicle()
     SetVehicleEngineHealth(veh, 1000.0)
     SetVehicleBodyHealth(veh, 1000.0)
     SetVehiclePetrolTankHealth(veh, 1000.0)
+    SetVehicleFuelLevel(veh, 100.0)
     SetVehicleDirtLevel(veh, 0.0)
 
     for i = 0, 7 do

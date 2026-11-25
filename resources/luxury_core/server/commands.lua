@@ -355,3 +355,50 @@ RegisterCommand('report', function(src, args)
     notify(src, ('^2Reporte enviado correctamente (%d miembros del staff en línea).^7'):format(staffNotified))
     if Logger and Logger.LogReport then Logger.LogReport(src, msg) end
 end, false)
+
+--- /pagar [id] [cantidad] o /transferir [id] [cantidad]: Pago en efectivo mano a mano (<= 4m)
+local function handlePayCash(src, args)
+    if src == 0 then return end
+    local player = Core.Players[src]
+    if not player then return end
+
+    local targetId = tonumber(args[1])
+    local amount = math.floor(tonumber(args[2]) or 0)
+    if not targetId or amount <= 0 or amount > 2147483647 then
+        return notify(src, 'Uso: ^3/pagar [id] [cantidad]^7')
+    end
+
+    if targetId == src then
+        return notify(src, '^1No puedes pagarte efectivo a ti mismo.^7')
+    end
+
+    local target = Core.Players[targetId]
+    if not target then
+        return notify(src, '^1El jugador no está conectado.^7')
+    end
+
+    local myPed = GetPlayerPed(src)
+    local tPed = GetPlayerPed(targetId)
+    if myPed == 0 or tPed == 0 or #(GetEntityCoords(myPed) - GetEntityCoords(tPed)) > 4.0 then
+        return notify(src, '^1Debes estar a menos de 4 metros de la persona para entregarle efectivo.^7')
+    end
+
+    if player:removeMoney('cash', amount, ('Pago en efectivo a %s'):format(target.name)) then
+        target:addMoney('cash', amount, ('Pago en efectivo de %s'):format(player.name))
+        notify(src, ('Has entregado ^2$%d^7 en efectivo a ^3%s^7.'):format(amount, target.name))
+        notify(targetId, ('Has recibido ^2$%d^7 en efectivo de ^3%s^7.'):format(amount, player.name))
+    else
+        notify(src, '^1No tienes suficiente dinero en efectivo.^7')
+    end
+end
+RegisterCommand('pagar', handlePayCash, false)
+RegisterCommand('transferir', handlePayCash, false)
+
+--- /ayuda o /comandos: Lista rápida de comandos disponibles
+local function handleHelp(src)
+    if src == 0 then return end
+    notify(src, '^3Rol:^7 /me, /do, /ooc (/b), /twt, /anon, /dado, /intentar, /911 (/entorno)')
+    notify(src, '^3Personaje:^7 /dinero, /pagar [id] [monto], /trabajo, /duty, /banda, /id, /report, /logout')
+end
+RegisterCommand('ayuda', handleHelp, false)
+RegisterCommand('comandos', handleHelp, false)

@@ -172,4 +172,15 @@ CreateThread(function()
     TriggerEvent('chat:addSuggestion', '/anticheat', 'Consulta o cambia el modo de Luxury Sentinel (strict | log).', {
         { name = 'modo', help = 'strict | log (opcional)' }
     })
+    TriggerEvent('chat:addSuggestion', '/slay', 'Abate instantáneamente a un jugador (Admin).', {
+        { name = 'id', help = 'ID del jugador (opcional)' }
+    })
+    TriggerEvent('chat:addSuggestion', '/cleararea', 'Limpia vehículos vacíos, props y peds NPC en un radio.', {
+        { name = 'radio', help = 'Radio en metros (5-200, defecto 40)' }
+    })
+    TriggerEvent('chat:addSuggestion', '/pagar', 'Entrega dinero en efectivo mano a mano a un jugador cercano.', {
+        { name = 'id', help = 'ID del jugador cercano' },
+        { name = 'cantidad', help = 'Cantidad de dinero' }
+    })
+    TriggerEvent('chat:addSuggestion', '/ayuda', 'Muestra el listado rápido de comandos disponibles.')
 end)

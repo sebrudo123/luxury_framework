@@ -266,6 +266,23 @@ registerAdminCommands('revive', 'mod', function(src, args)
     adminNotify(src, ('^2Jugador %s (ID: %d) revivido con éxito.^7'):format(target.name, targetId))
 end, true)
 
+--- /slay [id opcional] o /kill [id opcional]
+registerAdminCommands({ 'slay', 'kill' }, 'admin', function(src, args)
+    local targetId = tonumber(args[1]) or src
+    if targetId == 0 or not Core.Players[targetId] then
+        return adminNotify(src, 'Uso: ^3/slay [id]^7')
+    end
+    TriggerClientEvent('luxury:admin:clientSlay', targetId)
+    adminNotify(src, ('^3Jugador %s (ID: %d) abatido por administración.^7'):format(Core.Players[targetId].name, targetId))
+end, true)
+
+--- /cleararea [radio opcional]: Limpia vehículos vacíos, props y peds en el área
+registerAdminCommands('cleararea', 'mod', function(src, args)
+    local radius = math.max(5, math.min(200, math.floor(tonumber(args[1]) or 40)))
+    TriggerClientEvent('luxury:admin:clientClearArea', src, radius)
+    adminNotify(src, ('Limpieza de área ejecutada en un radio de ^3%dm^7.'):format(radius))
+end, false)
+
 --- /goto [id]
 registerAdminCommands('goto', 'mod', function(src, args)
     local targetId = tonumber(args[1])

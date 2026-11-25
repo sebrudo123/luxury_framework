@@ -38,13 +38,27 @@ end)
 
 --- Obtiene la licencia de Rockstar del jugador
 local function getPlayerLicense(src)
+    local fallback = nil
     for i = 0, GetNumPlayerIdentifiers(src) - 1 do
         local id = GetPlayerIdentifier(src, i)
-        if string.sub(id, 1, 8) == 'license:' then
+        if string.sub(id, 1, 9) == 'license2:' then
             return id
+        elseif string.sub(id, 1, 8) == 'license:' then
+            fallback = id
         end
     end
-    return nil
+    return fallback
+end
+
+local function getAllLicenses(src)
+    local l1, l2 = nil, nil
+    for i = 0, GetNumPlayerIdentifiers(src) - 1 do
+        local id = GetPlayerIdentifier(src, i)
+        if string.sub(id, 1, 8) == 'license:' then l1 = id end
+        if string.sub(id, 1, 9) == 'license2:' then l2 = id end
+    end
+    local primary = l2 or l1
+    return primary, l1 or primary, l2 or primary
 end
 
 --- Coloca al jugador en un Routing Bucket aislado al entrar en la selección
@@ -56,7 +70,7 @@ end)
 --- Solicitud de lista de personajes del jugador
 RegisterNetEvent('luxury_multicharacter:server:requestCharacters', function()
     local src = source
-    local license = getPlayerLicense(src)
+    local license, l1, l2 = getAllLicenses(src)
     if not license then
         DropPlayer(src, '[LUXURY] No se pudo autenticar tu licencia de Rockstar.')
         return
@@ -65,9 +79,9 @@ RegisterNetEvent('luxury_multicharacter:server:requestCharacters', function()
     local rows = MySQL.query.await([[
         SELECT citizenid, cash, bank, job, job_grade, gang, gang_grade, charinfo, position
         FROM luxury_players
-        WHERE license = ?
+        WHERE license = ? OR license = ? OR license = ?
         ORDER BY id ASC
-    ]], { license }) or {}
+    ]], { license, l1, l2 }) or {}
 
     local characters = {}
     for _, row in ipairs(rows) do
@@ -95,12 +109,12 @@ end)
 --- Selección y carga de un personaje
 RegisterNetEvent('luxury_multicharacter:server:selectCharacter', function(citizenid)
     local src = source
-    local license = getPlayerLicense(src)
+    local license, l1, l2 = getAllLicenses(src)
     if not license or not citizenid then return end
 
     local row = MySQL.single.await([[
-        SELECT citizenid, position FROM luxury_players WHERE license = ? AND citizenid = ?
-    ]], { license, citizenid })
+        SELECT citizenid, position FROM luxury_players WHERE citizenid = ? AND (license = ? OR license = ? OR license = ?)
+    ]], { citizenid, license, l1, l2 })
 
     if not row then
         TriggerClientEvent('luxury_multicharacter:client:notify', src, 'error', 'El personaje no pertenece a tu cuenta.')
@@ -123,12 +137,12 @@ end)
 --- Creación de un nuevo personaje
 RegisterNetEvent('luxury_multicharacter:server:createCharacter', function(data)
     local src = source
-    local license = getPlayerLicense(src)
+    local license, l1, l2 = getAllLicenses(src)
     if not license or not data then return end
 
     local countResult = MySQL.single.await([[
-        SELECT COUNT(*) as total FROM luxury_players WHERE license = ?
-    ]], { license })
+        SELECT COUNT(*) as total FROM luxury_players WHERE license = ? OR license = ? OR license = ?
+    ]], { license, l1, l2 })
 
     local totalChars = countResult and countResult.total or 0
     if totalChars >= Config.MaxCharacters then
@@ -181,12 +195,16 @@ RegisterNetEvent('luxury_multicharacter:server:deleteCharacter', function(citize
     local license = getPlayerLicense(src)
     if not license or not citizenid then return end
 
+    local _, l1, l2 = getAllLicenses(src)
     MySQL.query.await([[
-        DELETE FROM luxury_players WHERE license = ? AND citizenid = ?
-    ]], { license, citizenid })
+        DELETE FROM luxury_players WHERE citizenid = ? AND (license = ? OR license = ? OR license = ?)
+    ]], { citizenid, license, l1, l2 })
 
-    -- Limpiar transacciones bancarias asociadas
-    MySQL.query.await('DELETE FROM luxury_banking_transactions WHERE citizenid = ?', { citizenid })
+    -- Limpiar datos asociados del personaje eliminado
+    pcall(function() MySQL.query.await('DELETE FROM luxury_banking_transactions WHERE citizenid = ?', { citizenid }) end)
+    pcall(function() MySQL.query.await('DELETE FROM luxury_hud_settings WHERE citizenid = ?', { citizenid }) end)
+    pcall(function() MySQL.query.await('DELETE FROM luxury_owned_vehicles WHERE citizenid = ?', { citizenid }) end)
+    pcall(function() MySQL.query.await('DELETE FROM player_vehicles WHERE citizenid = ?', { citizenid }) end)
 
     TriggerClientEvent('luxury_multicharacter:client:notify', src, 'success', 'Personaje eliminado exitosamente.')
 

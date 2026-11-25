@@ -1,20 +1,20 @@
 {
-  "version": "1.5.1",
-  "releaseDate": "2026-11-24",
-  "changelog": "Puente nativo esx_addonaccount para cuentas de sociedad en luxury_banking, xPlayer.job.isBoss y xPlayer.getName(), validación anti-NaN y cooldown en luxury_banking/garage/hud, y Luxury Sentinel v2 completo.",
+  "version": "1.5.2",
+  "releaseDate": "2026-11-25",
+  "changelog": "Integración nativa luxury_lib -> luxury_notify, puente qbx_core completo, reglas RP del mundo GTA V en 0.00ms + Discord Rich Presence opcional, comandos /pagar, /ayuda, /slay, /cleararea, /fix con gasolina, y mejoras en luxury_multicharacter.",
   "resources": {
     "cfxlua-require": "1.0.2",
     "require": "1.0.2",
-    "luxury_core": "1.5.1",
-    "luxury_lib": "1.3.0",
+    "luxury_core": "1.5.2",
+    "luxury_lib": "1.3.1",
     "es_extended": "1.3.0",
     "qb-core": "1.3.0",
-    "qbx_core": "1.3.0",
+    "qbx_core": "1.4.0",
     "luxury_hud": "1.3.1",
     "luxury_banking": "1.3.1",
     "luxury_garage": "1.3.1",
     "luxury_radial": "1.3.0",
-    "luxury_multicharacter": "1.3.0"
+    "luxury_multicharacter": "1.3.1"
   },
   "files": {
     "cfxlua-require": [
@@ -58,7 +58,9 @@
       "bridge/qb_server.lua",
       "bridge/qb_client.lua",
       "bridge/qbox.lua",
-      "server/society.lua"
+      "server/society.lua",
+      "config/client.lua",
+      "client/loops.lua"
     ],
     "luxury_lib": [
       "fxmanifest.lua",
@@ -108,7 +110,8 @@
     ],
     "luxury_multicharacter": [
       "client/main.lua",
-      "html/style.css"
+      "html/style.css",
+      "server/main.lua"
     ]
   }
 }
