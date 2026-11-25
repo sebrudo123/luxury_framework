@@ -10,6 +10,7 @@ local function buildXPlayer(player)
     local self = {}
     self.source = player.source
     self.identifier = player.license
+    self.citizenid = player.citizenid
     self.name = player.name
     self.group = player.group
 
@@ -23,6 +24,7 @@ local function buildXPlayer(player)
         grade_name = gradeData.name or 'default',
         grade_label = player.job.grade_label,
         grade_salary = player.job.salary,
+        isBoss = player.job.isBoss == true,
         onduty = player.job.onduty ~= false
     }
 
@@ -96,6 +98,7 @@ local function buildXPlayer(player)
                 grade_name = gData.name or 'default',
                 grade_label = updatedJob.grade_label,
                 grade_salary = updatedJob.salary,
+                isBoss = updatedJob.isBoss == true,
                 onduty = updatedJob.onduty ~= false
             }
         end
@@ -191,6 +194,13 @@ local function buildXPlayer(player)
         return player.license
     end
 
+    function self.getName()
+        if player.charinfo and player.charinfo.firstname then
+            return (player.charinfo.firstname .. ' ' .. (player.charinfo.lastname or '')):gsub('%s+$', '')
+        end
+        return player.name
+    end
+
     function self.getGroup()
         return player.group
     end
@@ -222,11 +232,16 @@ end
 
 function ESX.GetPlayerFromIdentifier(identifier)
     for _, player in pairs(Core.Players) do
-        if player.license == identifier then
+        if player.license == identifier or player.citizenid == identifier then
             return buildXPlayer(player)
         end
     end
     return nil
+end
+
+function ESX.GetPlayerFromCitizenId(cid)
+    local player = exports.luxury_core:GetPlayerByCitizenId(cid)
+    return player and buildXPlayer(player) or nil
 end
 
 function ESX.GetPlayers()

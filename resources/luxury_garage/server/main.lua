@@ -107,7 +107,7 @@ RegisterNetEvent('luxury_garage:server:requestVehicles', function(garageId, isIm
 
     TriggerClientEvent('luxury_garage:client:openMenu', src, {
         garageId = garageId,
-        garageLabel = isImpound and Config.Impounds[garageId].label or Config.Garages[garageId].label,
+        garageLabel = (isImpound and Config.Impounds[garageId] and Config.Impounds[garageId].label) or (Config.Garages[garageId] and Config.Garages[garageId].label) or tostring(garageId),
         isImpound = isImpound,
         fee = isImpound and (Config.Impounds[garageId].fee or Config.ImpoundFee) or 0,
         vehicles = vehicles
@@ -174,9 +174,9 @@ RegisterNetEvent('luxury_garage:server:storeVehicle', function(plate, garageId, 
         return
     end
 
-    local engine = stats and stats.engine or 1000
-    local body = stats and stats.body or 1000
-    local fuel = stats and stats.fuel or 100
+    local engine = math.max(0, math.min(1000, tonumber(stats and stats.engine) or 1000))
+    local body = math.max(0, math.min(1000, tonumber(stats and stats.body) or 1000))
+    local fuel = math.max(0, math.min(100, tonumber(stats and stats.fuel) or 100))
     local modsStr = stats and stats.mods and json.encode(stats.mods) or nil
 
     if modsStr then

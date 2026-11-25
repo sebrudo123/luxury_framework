@@ -54,9 +54,13 @@ CreateThread(function()
 end)
 
 --- Guardar preferencias personalizadas del jugador (/hud)
+local hudSaveCooldown = {}
 RegisterNetEvent('luxury_hud:server:saveSettings', function(settingsData)
     local src = source
     if not settingsData then return end
+    local now = GetGameTimer()
+    if hudSaveCooldown[src] and (now - hudSaveCooldown[src]) < 1000 then return end
+    hudSaveCooldown[src] = now
 
     local cid = tostring(src)
     if ESX then
@@ -67,6 +71,7 @@ RegisterNetEvent('luxury_hud:server:saveSettings', function(settingsData)
     end
 
     local strSettings = type(settingsData) == 'table' and json.encode(settingsData) or tostring(settingsData)
+    if #strSettings > 16384 then return end
 
     MySQL.insert([[
         INSERT INTO luxury_hud_settings (citizenid, settings)

@@ -2,6 +2,25 @@
 -- Compatible con TODAS las versiones de ESX y Luxury Framework
 
 local ESX = nil
+local bankCooldowns = {}
+
+local function sanitizeBankAmount(val)
+    if type(val) ~= 'number' and type(val) ~= 'string' then return nil end
+    local num = tonumber(val)
+    if not num or num ~= num or num <= 0 or num == math.huge or num == -math.huge or num > 2147483647 then
+        return nil
+    end
+    return math.floor(num)
+end
+
+local function checkBankCooldown(src)
+    local now = GetGameTimer()
+    if bankCooldowns[src] and (now - bankCooldowns[src]) < 400 then
+        return false
+    end
+    bankCooldowns[src] = now
+    return true
+end
 
 -- Obtención segura de ESX (Compatible con v1.1, v1.2, v1-final y Legacy)
 local function getESX()
@@ -142,9 +161,10 @@ end)
 --- Retiro de Dinero
 RegisterNetEvent('luxury_banking:server:withdraw', function(amount, isAtm)
     local src = source
-    if not ESX then return end
+    if not ESX or not checkBankCooldown(src) then return end
     local xPlayer = ESX.GetPlayerFromId(src)
-    if not xPlayer or not amount or amount <= 0 then return end
+    amount = sanitizeBankAmount(amount)
+    if not xPlayer or not amount then return end
 
     local identifier = xPlayer.identifier or xPlayer.citizenid or tostring(src)
     local bankMoney = xPlayer.getAccount('bank') and xPlayer.getAccount('bank').money or 0
@@ -184,9 +204,10 @@ end)
 --- Depósito de Dinero
 RegisterNetEvent('luxury_banking:server:deposit', function(amount)
     local src = source
-    if not ESX then return end
+    if not ESX or not checkBankCooldown(src) then return end
     local xPlayer = ESX.GetPlayerFromId(src)
-    if not xPlayer or not amount or amount <= 0 then return end
+    amount = sanitizeBankAmount(amount)
+    if not xPlayer or not amount then return end
 
     local identifier = xPlayer.identifier or xPlayer.citizenid or tostring(src)
     local cashMoney = xPlayer.getMoney() or 0
@@ -215,9 +236,10 @@ end)
 --- Transferencia de Dinero
 RegisterNetEvent('luxury_banking:server:transfer', function(targetInput, amount, description)
     local src = source
-    if not ESX then return end
+    if not ESX or not checkBankCooldown(src) then return end
     local xPlayer = ESX.GetPlayerFromId(src)
-    if not xPlayer or not targetInput or not amount or amount <= 0 then return end
+    amount = sanitizeBankAmount(amount)
+    if not xPlayer or not targetInput or not amount then return end
 
     local senderIdentifier = xPlayer.identifier or xPlayer.citizenid or tostring(src)
     local bankMoney = xPlayer.getAccount('bank') and xPlayer.getAccount('bank').money or 0
@@ -276,9 +298,10 @@ end)
 --- Acciones de Cuenta de Sociedad (Jefe de Empresa)
 RegisterNetEvent('luxury_banking:server:societyAction', function(actionType, amount)
     local src = source
-    if not ESX then return end
+    if not ESX or not checkBankCooldown(src) then return end
     local xPlayer = ESX.GetPlayerFromId(src)
-    if not xPlayer or not xPlayer.job or not amount or amount <= 0 then return end
+    amount = sanitizeBankAmount(amount)
+    if not xPlayer or not xPlayer.job or not amount then return end
 
     if xPlayer.job.grade_name ~= 'boss' and not xPlayer.job.isBoss then
         xPlayer.showNotification('~r~No tienes permisos de jefe para esta cuenta de empresa.')

@@ -1,18 +1,18 @@
 {
-  "version": "1.5.0",
+  "version": "1.5.1",
   "releaseDate": "2026-11-24",
-  "changelog": "Luxury Sentinel v2: validación real de heartbeat criptográfico, anti-teleport autoritativo en OneSync, sistema de strikes y modo strict/log (/anticheat), caché de baneos, limitador granular de entidades/eventos/partículas/fuego, bloqueo de removeAllWeaponsEvent y weaponDamageEvent, anti-invisibilidad/freecam/recursos fantasma, cierre de exposición RPC Tunnel y protección de consumeNeed/setDeadState.",
+  "changelog": "Puente nativo esx_addonaccount para cuentas de sociedad en luxury_banking, xPlayer.job.isBoss y xPlayer.getName(), validación anti-NaN y cooldown en luxury_banking/garage/hud, y Luxury Sentinel v2 completo.",
   "resources": {
     "cfxlua-require": "1.0.2",
     "require": "1.0.2",
-    "luxury_core": "1.5.0",
+    "luxury_core": "1.5.1",
     "luxury_lib": "1.3.0",
     "es_extended": "1.3.0",
     "qb-core": "1.3.0",
     "qbx_core": "1.3.0",
-    "luxury_hud": "1.3.0",
-    "luxury_banking": "1.3.0",
-    "luxury_garage": "1.3.0",
+    "luxury_hud": "1.3.1",
+    "luxury_banking": "1.3.1",
+    "luxury_garage": "1.3.1",
     "luxury_radial": "1.3.0",
     "luxury_multicharacter": "1.3.0"
   },
@@ -57,7 +57,8 @@
       "bridge/esx_client.lua",
       "bridge/qb_server.lua",
       "bridge/qb_client.lua",
-      "bridge/qbox.lua"
+      "bridge/qbox.lua",
+      "server/society.lua"
     ],
     "luxury_lib": [
       "fxmanifest.lua",
@@ -88,15 +89,18 @@
       "client/main.lua",
       "html/index.html",
       "html/style.css",
-      "html/script.js"
+      "html/script.js",
+      "server/main.lua"
     ],
     "luxury_banking": [
       "client/main.lua",
-      "html/style.css"
+      "html/style.css",
+      "server/main.lua"
     ],
     "luxury_garage": [
       "client/main.lua",
-      "html/style.css"
+      "html/style.css",
+      "server/main.lua"
     ],
     "luxury_radial": [
       "client/main.lua",

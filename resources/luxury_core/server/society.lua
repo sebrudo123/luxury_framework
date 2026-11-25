@@ -42,6 +42,40 @@ exports('AddSocietyMoney', Society.AddMoney)
 exports('RemoveSocietyMoney', Society.RemoveMoney)
 
 ---------------------------------------------------------------------
+-- Puente nativo esx_addonaccount (Compatible con okokBanking / luxury_banking / esx_society)
+---------------------------------------------------------------------
+AddEventHandler('esx_addonaccount:getSharedAccount', function(accountName, cb)
+    if type(cb) ~= 'function' or type(accountName) ~= 'string' then return end
+    local socName = accountName:gsub('^society_', '')
+    local currentMoney = Society.GetMoney(socName)
+
+    local accountObj = {
+        name = accountName,
+        money = currentMoney,
+        addMoney = function(amount)
+            local ok = Society.AddMoney(socName, amount)
+            if ok and Logger and Logger.LogEconomy then
+                Logger.LogEconomy(0, accountName, amount, 'Depósito Sociedad', 'Via esx_addonaccount bridge')
+            end
+            return ok
+        end,
+        removeMoney = function(amount)
+            local ok = Society.RemoveMoney(socName, amount)
+            if ok and Logger and Logger.LogEconomy then
+                Logger.LogEconomy(0, accountName, amount, 'Retiro Sociedad', 'Via esx_addonaccount bridge')
+            end
+            return ok
+        end,
+        setMoney = function(amount)
+            amount = math.max(0, math.floor(tonumber(amount) or 0))
+            local affected = MySQL.update.await('UPDATE luxury_societies SET money = ? WHERE name = ?', { amount, socName })
+            return affected and affected > 0
+        end
+    }
+    cb(accountObj)
+end)
+
+---------------------------------------------------------------------
 -- Comandos de Gestión para Jefes (Boss Menu Commands)
 ---------------------------------------------------------------------
 local function notify(src, msg)
