@@ -116,6 +116,10 @@ local function saveUpdateFile(resName, filePath, content)
         local parentDir = corePath:match('^(.*)[/\\][^/\\]+$')
         if parentDir then
             local targetPath = parentDir .. '/' .. resName .. '/' .. filePath
+            local targetDir = targetPath:match('^(.*)[/\\][^/\\]+$')
+            if targetDir and os and os.execute then
+                os.execute(('mkdir -p %q'):format(targetDir))
+            end
             local f = io.open(targetPath, 'w+b')
             if f then
                 f:write(content)
@@ -246,6 +250,8 @@ local function performUpdateProcess()
                         ExecuteCommand('restart qb-core')
                         ExecuteCommand('ensure qbx_core')
                         ExecuteCommand('restart qbx_core')
+                        ExecuteCommand('restart luxury_notify')
+                        ExecuteCommand('restart luxury_loading')
                         ExecuteCommand('restart luxury_hud')
                         ExecuteCommand('restart luxury_banking')
                         ExecuteCommand('restart luxury_garage')

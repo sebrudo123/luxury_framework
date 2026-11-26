@@ -1,11 +1,11 @@
 {
-  "version": "1.5.3",
+  "version": "1.5.4",
   "releaseDate": "2026-11-25",
-  "changelog": "Corrección en Core.RunDatabaseMigrations (tablas garage_* separadas para oxmysql sin multipleStatements), reintento automático de Luxury Updater en arranque y limpieza de recursos obsoletos en server.cfg.",
+  "changelog": "Manifiesto completo de 125 archivos en luxury_update, soporte de subdirectorios en updater.lua, CLI terminal (luxury update/check/status/restart/logs) y tema Luxury Admin para txAdmin.",
   "resources": {
     "cfxlua-require": "1.0.2",
     "require": "1.0.2",
-    "luxury_core": "1.5.3",
+    "luxury_core": "1.5.4",
     "luxury_lib": "1.3.1",
     "es_extended": "1.3.0",
     "qb-core": "1.3.0",
@@ -21,97 +21,154 @@
       "fxmanifest.lua",
       "init.lua"
     ],
-    "require": [
-      "fxmanifest.lua",
-      "init.lua"
-    ],
-    "luxury_core": [
-      "fxmanifest.lua",
-      "config.lua",
-      "config/shared.lua",
-      "config/server.lua",
-      "bridge/cfxlua_require.lua",
-      "shared/jobs.lua",
-      "shared/gangs.lua",
-      "server/main.lua",
-      "server/webhooks.lua",
-      "server/logger.lua",
-      "server/security.lua",
-      "server/proxy.lua",
-      "server/status.lua",
-      "server/admin.lua",
-      "server/commands.lua",
-      "server/inventory.lua",
-      "server/player.lua",
-      "server/functions.lua",
-      "server/events.lua",
-      "server/death.lua",
-      "server/updater.lua",
-      "client/admin.lua",
-      "client/functions.lua",
-      "client/events.lua",
-      "client/death.lua",
-      "client/security.lua",
-      "client/suggestions.lua",
-      "bridge/esx_server.lua",
-      "bridge/esx_client.lua",
-      "bridge/qb_server.lua",
-      "bridge/qb_client.lua",
-      "bridge/qbox.lua",
-      "server/society.lua",
-      "config/client.lua",
-      "client/loops.lua"
-    ],
-    "luxury_lib": [
-      "fxmanifest.lua",
-      "init.lua",
-      "client/callback.lua",
-      "server/callback.lua",
-      "client/notify.lua"
-    ],
     "es_extended": [
+      "client.lua",
       "fxmanifest.lua",
       "imports.lua",
-      "server.lua",
-      "client.lua"
-    ],
-    "qb-core": [
-      "fxmanifest.lua",
-      "import.lua",
-      "server.lua",
-      "client.lua"
-    ],
-    "qbx_core": [
-      "fxmanifest.lua",
-      "server.lua",
-      "client.lua"
-    ],
-    "luxury_hud": [
-      "config.lua",
-      "client/main.lua",
-      "html/index.html",
-      "html/style.css",
-      "html/script.js",
-      "server/main.lua"
+      "server.lua"
     ],
     "luxury_banking": [
       "client/main.lua",
+      "config.lua",
+      "fxmanifest.lua",
+      "html/index.html",
+      "html/script.js",
       "html/style.css",
+      "install.sql",
       "server/main.lua"
+    ],
+    "luxury_core": [
+      "bridge/cfxlua_require.lua",
+      "bridge/esx_client.lua",
+      "bridge/esx_server.lua",
+      "bridge/qb_client.lua",
+      "bridge/qb_server.lua",
+      "bridge/qbox.lua",
+      "client/admin.lua",
+      "client/death.lua",
+      "client/events.lua",
+      "client/functions.lua",
+      "client/loops.lua",
+      "client/main.lua",
+      "client/player.lua",
+      "client/proxy.lua",
+      "client/security.lua",
+      "client/status.lua",
+      "client/suggestions.lua",
+      "config.lua",
+      "config/client.lua",
+      "config/server.lua",
+      "config/shared.lua",
+      "database.sql",
+      "fxmanifest.lua",
+      "install.sql",
+      "server/admin.lua",
+      "server/admins.lua",
+      "server/buckets.lua",
+      "server/commands.lua",
+      "server/death.lua",
+      "server/events.lua",
+      "server/functions.lua",
+      "server/inventory.lua",
+      "server/licenses.lua",
+      "server/logger.lua",
+      "server/main.lua",
+      "server/player.lua",
+      "server/preflight.lua",
+      "server/proxy.lua",
+      "server/security.lua",
+      "server/society.lua",
+      "server/status.lua",
+      "server/updater.lua",
+      "server/webhooks.lua",
+      "shared/gangs.lua",
+      "shared/jobs.lua",
+      "shared/proxy.lua",
+      "shared/tunnel.lua",
+      "shared/vehicles.lua",
+      "shared/weapons.lua"
     ],
     "luxury_garage": [
       "client/main.lua",
+      "config.lua",
+      "fxmanifest.lua",
+      "html/index.html",
+      "html/script.js",
       "html/style.css",
+      "install.sql",
       "server/main.lua"
     ],
-    "luxury_radial": [
+    "luxury_hud": [
       "client/main.lua",
-      "html/style.css"
+      "config.lua",
+      "fxmanifest.lua",
+      "html/index.html",
+      "html/script.js",
+      "html/style.css",
+      "install.sql",
+      "server/main.lua"
+    ],
+    "luxury_lib": [
+      "client/cache.lua",
+      "client/callback.lua",
+      "client/notify.lua",
+      "client/streaming.lua",
+      "fxmanifest.lua",
+      "init.lua",
+      "server/callback.lua",
+      "shared/math.lua",
+      "shared/proxy.lua",
+      "shared/table.lua",
+      "shared/tunnel.lua"
+    ],
+    "luxury_loading": [
+      "fxmanifest.lua",
+      "web/assets/images/logo.svg",
+      "web/config.js",
+      "web/css/style.css",
+      "web/index.html",
+      "web/js/app.js"
     ],
     "luxury_multicharacter": [
       "client/main.lua",
+      "config.lua",
+      "fxmanifest.lua",
+      "html/index.html",
+      "html/script.js",
+      "html/style.css",
+      "install.sql",
+      "server/main.lua"
+    ],
+    "luxury_notify": [
+      "client.lua",
+      "fxmanifest.lua",
+      "html/index.html",
+      "html/script.js",
+      "html/style.css"
+    ],
+    "luxury_radial": [
+      "client/main.lua",
+      "config.lua",
+      "fxmanifest.lua",
+      "html/index.html",
+      "html/script.js",
       "html/style.css",
       "server/main.lua"
+    ],
+    "qb-core": [
+      "client.lua",
+      "fxmanifest.lua",
+      "import.lua",
+      "server.lua"
+    ],
+    "qbx_core": [
+      "client.lua",
+      "fxmanifest.lua",
+      "server.lua"
+    ],
+    "require": [
+      "fxmanifest.lua",
+      "init.lua"
     ]
   }
 }
