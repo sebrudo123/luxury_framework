@@ -188,8 +188,9 @@ function Core.RunDatabaseMigrations()
         ]])
     end)
 
-    -- Tablas complementarias de jg-advancedgarages v4
-    MySQL.query.await([[
+    -- Tablas complementarias de jg-advancedgarages v4 (una sentencia por consulta)
+    local garageTables = {
+        [[
         CREATE TABLE IF NOT EXISTS `garage_interiors` (
             `id` VARCHAR(255) NOT NULL,
             `name` VARCHAR(255) NOT NULL,
@@ -207,7 +208,8 @@ function Core.RunDatabaseMigrations()
             `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+        ]],
+        [[
         CREATE TABLE IF NOT EXISTS `garage_locations` (
             `id` VARCHAR(255) NOT NULL,
             `name` VARCHAR(255) NOT NULL,
@@ -241,7 +243,8 @@ function Core.RunDatabaseMigrations()
             KEY `interior_id` (`interior_id`),
             KEY `template_id` (`template_id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+        ]],
+        [[
         CREATE TABLE IF NOT EXISTS `garage_location_access` (
             `id` INT(11) unsigned NOT NULL AUTO_INCREMENT,
             `garage_id` VARCHAR(255) NOT NULL,
@@ -253,7 +256,8 @@ function Core.RunDatabaseMigrations()
             UNIQUE KEY `garage_identifier` (`garage_id`, `identifier`),
             KEY `identifier` (`identifier`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+        ]],
+        [[
         CREATE TABLE IF NOT EXISTS `player_priv_garages` (
             `id` INT(11) unsigned NOT NULL AUTO_INCREMENT,
             `owners` LONGTEXT,
@@ -266,7 +270,8 @@ function Core.RunDatabaseMigrations()
             `distance` INT(11) DEFAULT '10',
             PRIMARY KEY (`id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+        ]],
+        [[
         CREATE TABLE IF NOT EXISTS `garage_vehicle_shares` (
             `plate` VARCHAR(16) NOT NULL,
             `owner_identifier` VARCHAR(255) NOT NULL,
@@ -275,7 +280,8 @@ function Core.RunDatabaseMigrations()
             PRIMARY KEY (`plate`, `owner_identifier`, `identifier`),
             KEY `recipient` (`identifier`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+        ]],
+        [[
         CREATE TABLE IF NOT EXISTS `garage_vehicle_loans` (
             `plate` VARCHAR(16) NOT NULL,
             `owner_identifier` VARCHAR(255) NOT NULL,
@@ -284,7 +290,8 @@ function Core.RunDatabaseMigrations()
             `garage_id` VARCHAR(255) NOT NULL,
             PRIMARY KEY (`plate`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+        ]],
+        [[
         CREATE TABLE IF NOT EXISTS `garage_vehicle_favourites` (
             `plate` VARCHAR(16) NOT NULL,
             `owner_identifier` VARCHAR(255) NOT NULL,
@@ -292,7 +299,8 @@ function Core.RunDatabaseMigrations()
             PRIMARY KEY (`plate`, `owner_identifier`, `identifier`),
             KEY `identifier` (`identifier`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+        ]],
+        [[
         CREATE TABLE IF NOT EXISTS `garage_vehicle_trailers` (
             `vehicle_plate` VARCHAR(8) NOT NULL,
             `trailer_plate` VARCHAR(8) NOT NULL,
@@ -301,7 +309,8 @@ function Core.RunDatabaseMigrations()
             PRIMARY KEY (`trailer_plate`),
             UNIQUE KEY `vehicle_position` (`vehicle_plate`, `position`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+        ]],
+        [[
         CREATE TABLE IF NOT EXISTS `garage_settings` (
             `id` TINYINT UNSIGNED NOT NULL,
             `settings_data` LONGTEXT NOT NULL,
@@ -310,7 +319,12 @@ function Core.RunDatabaseMigrations()
             `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-    ]])
+        ]]
+    }
+
+    for _, ddl in ipairs(garageTables) do
+        MySQL.query.await(ddl)
+    end
 
     -- Interior por defecto de jg-advancedgarages v4
     MySQL.query.await([[

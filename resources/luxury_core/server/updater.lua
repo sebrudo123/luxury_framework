@@ -35,9 +35,16 @@ local function isVersionNewer(current, latest)
 end
 
 -- Comprobación de versión en GitHub
-local function checkForUpdates(silent)
+local function checkForUpdates(silent, retriesLeft)
+    retriesLeft = retriesLeft == nil and 1 or retriesLeft
     PerformHttpRequest(versionUrl, function(status, responseText, headers)
         if status ~= 200 or not responseText then
+            if status == 0 and retriesLeft > 0 then
+                SetTimeout(15000, function()
+                    checkForUpdates(silent, retriesLeft - 1)
+                end)
+                return
+            end
             if not silent then
                 print('^1[LUXURY-UPDATER] No se pudo conectar a GitHub para verificar actualizaciones (HTTP ' .. tostring(status) .. ').^0')
             end
@@ -68,8 +75,8 @@ end
 
 -- Ejecución automática al arrancar el servidor
 CreateThread(function()
-    Wait(4000) -- Esperar a que la consola inicial de FXServer y txAdmin se asiente
-    checkForUpdates(false)
+    Wait(12000) -- Esperar a que la consola inicial de FXServer y red se estabilicen
+    checkForUpdates(false, 1)
 
     -- Verificación periódica en segundo plano cada 30 minutos
     while true do
