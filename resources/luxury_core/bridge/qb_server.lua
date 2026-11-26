@@ -231,3 +231,87 @@ end)
 exports('GetCoreObject', function() return QBCore end)
 exports('GetSharedObject', function() return QBCore end)
 exports('GetQBCore', function() return QBCore end)
+
+---------------------------------------------------------------------
+-- Funciones utilitarias adicionales estándar de QBCore
+---------------------------------------------------------------------
+function QBCore.Functions.GetQBPlayers()
+    local qbPlayers = {}
+    for src, player in pairs(Core.Players) do
+        qbPlayers[src] = buildQPlayer(player)
+    end
+    return qbPlayers
+end
+
+function QBCore.Functions.GetPlayersData()
+    return QBCore.Functions.GetQBPlayers()
+end
+
+function QBCore.Functions.GetPlayerByLicense(license)
+    for _, player in pairs(Core.Players) do
+        if player.license == license then
+            return buildQPlayer(player)
+        end
+    end
+    return nil
+end
+
+function QBCore.Functions.GetIdentifier(source, idType)
+    idType = idType or 'license'
+    for _, id in ipairs(GetPlayerIdentifiers(source)) do
+        if string.find(id, idType) then
+            return id
+        end
+    end
+    return nil
+end
+
+function QBCore.Functions.GetSource(identifier)
+    for src, player in pairs(Core.Players) do
+        if player.citizenid == identifier or player.license == identifier then
+            return src
+        end
+    end
+    return 0
+end
+
+function QBCore.Functions.GetCoords(entity)
+    local coords = GetEntityCoords(entity)
+    local heading = GetEntityHeading(entity)
+    return vector4(coords.x, coords.y, coords.z, heading)
+end
+
+function QBCore.Functions.HasPermission(source, permission)
+    if Core and Core.HasPermission then
+        return Core.HasPermission(source, permission)
+    end
+    return IsPlayerAceAllowed(tostring(source), 'command') or false
+end
+
+function QBCore.Functions.GetPermission(source)
+    local player = Core.Players[source]
+    if player and player.group then
+        return player.group
+    end
+    return 'user'
+end
+
+function QBCore.Functions.IsOptin(source)
+    return true
+end
+
+function QBCore.Functions.ToggleOptin(source)
+end
+
+function QBCore.Functions.AddJob(jobName, jobData)
+    if Jobs then
+        Jobs[jobName] = jobData
+    end
+end
+
+function QBCore.Functions.AddItems(items)
+    if not QBCore.Shared.Items then QBCore.Shared.Items = {} end
+    for item, data in pairs(items) do
+        QBCore.Shared.Items[item] = data
+    end
+end

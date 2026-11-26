@@ -122,3 +122,45 @@ end)
 exports('GetCoreObject', function() return QBCore end)
 exports('GetSharedObject', function() return QBCore end)
 exports('GetQBCore', function() return QBCore end)
+
+---------------------------------------------------------------------
+-- Funciones utilitarias adicionales estándar de QBCore (Cliente)
+---------------------------------------------------------------------
+function QBCore.Functions.GetPlayerData(cb)
+    if cb then
+        cb(QBCore.PlayerData)
+    else
+        return QBCore.PlayerData
+    end
+end
+
+function QBCore.Functions.GetCoords(entity)
+    local coords = GetEntityCoords(entity)
+    local heading = GetEntityHeading(entity)
+    return vector4(coords.x, coords.y, coords.z, heading)
+end
+
+function QBCore.Functions.HasItem(items, amount)
+    return exports['luxury_core']:HasItem(items, amount)
+end
+
+function QBCore.Functions.TriggerCallback(name, cb, ...)
+    if Luxury and Luxury.TriggerCallback then
+        Luxury.TriggerCallback(name, cb, ...)
+    else
+        TriggerServerEvent('QBCore:Server:TriggerCallback', name, ...)
+    end
+end
+
+function QBCore.Functions.Notify(text, notifyType, length)
+    notifyType = notifyType or 'primary'
+    length = length or 5000
+    if exports['luxury_notify'] then
+        exports['luxury_notify']:Notify(text, notifyType, length)
+    else
+        TriggerEvent('chat:addMessage', {
+            color = { 212, 175, 55 },
+            args = { 'QBCore', text }
+        })
+    end
+end

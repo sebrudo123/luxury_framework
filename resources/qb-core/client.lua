@@ -1,28 +1,34 @@
-QBCore = nil
-
-local function getQBCore()
-    if not QBCore then
-        pcall(function()
-            QBCore = exports['luxury_core']:GetQBCore()
-        end)
+-- luxury_core: Puente Cliente para scripts QBCore (exports['qb-core']:GetCoreObject())
+local function getQBCoreObject()
+    if rawget(_G, 'QBCore') and type(QBCore) == 'table' and QBCore.Functions then
+        return QBCore
     end
+
+    local ok, obj = pcall(function()
+        return exports['luxury_core']:GetCoreObject()
+    end)
+    if ok and obj and type(obj) == 'table' and obj.Functions then
+        QBCore = obj
+        return QBCore
+    end
+
+    ok, obj = pcall(function()
+        return exports['luxury_core']:GetQBCore()
+    end)
+    if ok and obj and type(obj) == 'table' and obj.Functions then
+        QBCore = obj
+        return QBCore
+    end
+
     return QBCore
 end
 
-QBCore = getQBCore()
+QBCore = getQBCoreObject()
 
 AddEventHandler('QBCore:GetObject', function(cb)
-    cb(getQBCore())
+    cb(getQBCoreObject())
 end)
 
-exports('GetCoreObject', function()
-    return getQBCore()
-end)
-
-exports('GetSharedObject', function()
-    return getQBCore()
-end)
-
-exports('GetQBCore', function()
-    return getQBCore()
-end)
+exports('GetCoreObject', getQBCoreObject)
+exports('GetSharedObject', getQBCoreObject)
+exports('GetQBCore', getQBCoreObject)
