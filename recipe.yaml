@@ -27,29 +27,45 @@ tasks:
   - action: remove_path
     path: ./tmp/oxmysql.zip
 
-  # 3. Conectar a la base de datos MySQL/MariaDB
+  # 3. Descargar e instalar ox_lib (incluye cfxlua-require) desde GitHub Releases
+  - action: download_file
+    url: https://github.com/overextended/ox_lib/releases/latest/download/ox_lib.zip
+    path: ./tmp/ox_lib.zip
+
+  - action: unzip
+    src: ./tmp/ox_lib.zip
+    dest: ./resources/[standalone]
+
+  - action: remove_path
+    path: ./tmp/ox_lib.zip
+
+  # 4. Conectar a la base de datos MySQL/MariaDB
   - action: connect_database
 
-  # 4. Descargar Luxury Framework completo desde GitHub
+  # 5. Descargar Luxury Framework completo desde GitHub
   - action: download_github
     src: https://github.com/sebrudo123/luxury_framework
     ref: main
     dest: ./tmp/luxury
 
-  # 5. Ejecutar migraciones SQL del framework en la base de datos
+  # Evitar duplicado de cfxlua-require si ox_lib.zip ya lo incluyo en [standalone]
+  - action: remove_path
+    path: ./tmp/luxury/resources/cfxlua-require
+
+  # 6. Ejecutar migraciones SQL del framework en la base de datos
   - action: query_database
     file: ./tmp/luxury/install.sql
 
-  # 6. Desplegar configuración server.cfg optimizada
+  # 7. Desplegar configuración server.cfg optimizada
   - action: move_path
     src: ./tmp/luxury/server.cfg
     dest: ./server.cfg
 
-  # 7. Mover todos los recursos del framework a resources/[luxury]
+  # 8. Mover todos los recursos del framework a resources/[luxury]
   - action: move_path
     src: ./tmp/luxury/resources
     dest: ./resources/[luxury]
 
-  # 8. Limpiar archivos temporales
+  # 9. Limpiar archivos temporales
   - action: remove_path
     path: ./tmp
