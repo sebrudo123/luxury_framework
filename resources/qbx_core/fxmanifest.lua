@@ -3,9 +3,13 @@ game 'gta5'
 lua54 'yes'
 
 name 'qbx_core'
-description 'Luxury Core -> Puente de Compatibilidad Nativo para Scripts Qbox'
-author 'Luxury Framework'
-version '1.4.0'
+description 'Luxury Core -> Puente oficial compatible con scripts de Qbox (qbx_core)'
+author 'Vertex Development'
+version '1.0.0'
+
+shared_scripts {
+    'import.lua'
+}
 
 server_scripts {
     'server.lua'
@@ -16,14 +20,16 @@ client_scripts {
 }
 
 exports {
+    'GetCoreObject',
     'GetPlayer',
     'GetPlayerByCitizenId',
     'GetPlayersData',
-    'GetCoreObject',
     'Notify',
     'AddMoney',
     'RemoveMoney',
     'SetJob',
     'SetGang',
-    'SetJobDuty'
+    'SetJobDuty',
+    'GetQbxPlayer',
+    'GetQboxPlayer'
 }

@@ -1,11 +1,18 @@
+-- luxury_core: Puente Servidor para scripts Qbox (qbx_core)
 local function getQPlayer(src)
     return exports['luxury_core']:GetQboxPlayer(src)
 end
 
+local function getQBCore()
+    return exports['luxury_core']:GetQBCore()
+end
+
 exports('GetPlayer', getQPlayer)
+exports('GetQbxPlayer', getQPlayer)
+exports('GetQboxPlayer', getQPlayer)
 
 exports('GetPlayerByCitizenId', function(cid)
-    local qb = exports['luxury_core']:GetQBCore()
+    local qb = getQBCore()
     return qb and qb.Functions and qb.Functions.GetPlayerByCitizenId(cid) or nil
 end)
 
@@ -14,7 +21,7 @@ exports('GetPlayersData', function()
 end)
 
 exports('GetCoreObject', function()
-    return exports['luxury_core']:GetQBCore()
+    return getQBCore()
 end)
 
 exports('Notify', function(src, text, notifyType, duration)
