@@ -1,4 +1,6 @@
 -- luxury_core: Puente Servidor para scripts QBCore (exports['qb-core']:GetCoreObject())
+QBCore = QBCore or {}
+
 local function getQBCoreObject()
     if rawget(_G, 'QBCore') and type(QBCore) == 'table' and QBCore.Functions then
         return QBCore
@@ -24,6 +26,18 @@ local function getQBCoreObject()
 end
 
 QBCore = getQBCoreObject()
+
+-- Fallback asíncrono para scripts de inicio rápido
+if not (QBCore and QBCore.Functions) then
+    CreateThread(function()
+        local attempts = 0
+        while not (QBCore and QBCore.Functions) and attempts < 100 do
+            Wait(100)
+            attempts = attempts + 1
+            QBCore = getQBCoreObject()
+        end
+    end)
+end
 
 AddEventHandler('QBCore:GetObject', function(cb)
     cb(getQBCoreObject())

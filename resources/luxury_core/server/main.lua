@@ -439,6 +439,7 @@ end
 exports('RunDatabaseMigrations', Core.RunDatabaseMigrations)
 
 CreateThread(function()
+    Wait(500) -- Ceder ciclo para evitar bloqueo del hilo svMain durante el arranque
     Core.RunDatabaseMigrations()
 
     -- Presentación del Banner Oficial
