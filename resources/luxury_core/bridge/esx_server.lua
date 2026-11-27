@@ -318,3 +318,6 @@ end
 exports('getSharedObject', function() return ESX end)
 exports('GetSharedObject', function() return ESX end)
 exports('GetESX', function() return ESX end)
+
+-- Alias universal para scripts que llaman a ESX.RegisterCallback en vez de RegisterServerCallback
+ESX.RegisterCallback = ESX.RegisterServerCallback

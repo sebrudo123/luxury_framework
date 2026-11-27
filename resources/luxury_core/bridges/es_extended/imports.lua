@@ -1,4 +1,4 @@
--- luxury_core: ESX Import Helper (0.00ms no bloqueante)
+-- luxury_core: ESX Import Helper (Compatibilidad universal inmediata)
 local function resolveESX()
     if rawget(_G, 'ESX') and type(ESX) == 'table' and (ESX.GetPlayerData or ESX.GetPlayerFromId) then
         return ESX
@@ -30,7 +30,7 @@ end
 
 ESX = resolveESX()
 
--- Resolución asíncrona en hilo separado para NUNCA bloquear el inicio del recurso
+-- Si luxury_core todavía no había cargado, resolver en hilo asíncrono
 if not ESX then
     CreateThread(function()
         local attempts = 0

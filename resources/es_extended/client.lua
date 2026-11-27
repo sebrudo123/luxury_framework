@@ -13,6 +13,14 @@ local function getESXObject()
     end
 
     ok, obj = pcall(function()
+        return exports['luxury_core']:GetSharedObject()
+    end)
+    if ok and obj and type(obj) == 'table' then
+        ESX = obj
+        return ESX
+    end
+
+    ok, obj = pcall(function()
         return exports['luxury_core']:GetESX()
     end)
     if ok and obj and type(obj) == 'table' then
