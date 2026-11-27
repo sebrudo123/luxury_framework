@@ -1,4 +1,4 @@
--- luxury_core: QBX Import Helper con resolución asíncrona reactiva
+-- luxury_core: QBX Import Helper (0.00ms no bloqueante)
 local function resolveQBX()
     if rawget(_G, 'qbx') and type(qbx) == 'table' then
         return qbx
@@ -17,12 +17,15 @@ end
 qbx = resolveQBX()
 QBCore = resolveQBX()
 
+-- Resolución asíncrona en hilo separado para NUNCA bloquear el inicio del recurso
 if not qbx then
-    local attempts = 0
-    while not qbx and attempts < 100 do
-        Wait(50)
-        attempts = attempts + 1
-        qbx = resolveQBX()
-        QBCore = qbx
-    end
+    CreateThread(function()
+        local attempts = 0
+        while not qbx and attempts < 100 do
+            Wait(100)
+            attempts = attempts + 1
+            qbx = resolveQBX()
+            QBCore = qbx
+        end
+    end)
 end

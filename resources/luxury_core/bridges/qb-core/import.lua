@@ -1,10 +1,9 @@
--- luxury_core: QBCore Import Helper con espera de arranque y fallback
+-- luxury_core: QBCore Import Helper (0.00ms no bloqueante)
 local function resolveQBCore()
     if rawget(_G, 'QBCore') and type(QBCore) == 'table' and QBCore.Functions then
         return QBCore
     end
 
-    -- 1. Intentar export de luxury_core
     local ok, obj = pcall(function()
         return exports['luxury_core']:GetCoreObject()
     end)
@@ -12,17 +11,8 @@ local function resolveQBCore()
         return obj
     end
 
-    -- 2. Intentar export con GetQBCore
     ok, obj = pcall(function()
         return exports['luxury_core']:GetQBCore()
-    end)
-    if ok and obj and type(obj) == 'table' and obj.Functions then
-        return obj
-    end
-
-    -- 3. Intentar export nativo qb-core
-    ok, obj = pcall(function()
-        return exports['qb-core']:GetCoreObject()
     end)
     if ok and obj and type(obj) == 'table' and obj.Functions then
         return obj
@@ -33,12 +23,14 @@ end
 
 QBCore = resolveQBCore()
 
--- Si el recurso invocador arrancó antes que el framework, resolver de forma reactiva
+-- Resolución asíncrona en hilo separado para NUNCA bloquear el inicio del recurso
 if not QBCore then
-    local attempts = 0
-    while not QBCore and attempts < 100 do
-        Wait(50)
-        attempts = attempts + 1
-        QBCore = resolveQBCore()
-    end
+    CreateThread(function()
+        local attempts = 0
+        while not QBCore and attempts < 100 do
+            Wait(100)
+            attempts = attempts + 1
+            QBCore = resolveQBCore()
+        end
+    end)
 end
