@@ -5,7 +5,7 @@ lua54 'yes'
 name 'es_extended'
 description 'Luxury Core -> Puente oficial compatible con scripts de ESX'
 author 'Vertex Development'
-version '1.0.0'
+version '1.9.4'
 
 shared_scripts {
     'imports.lua'
@@ -21,5 +21,6 @@ client_scripts {
 
 exports {
     'getSharedObject',
-    'GetSharedObject'
+    'GetSharedObject',
+    'GetESX'
 }

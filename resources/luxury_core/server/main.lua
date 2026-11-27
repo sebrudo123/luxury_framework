@@ -347,6 +347,65 @@ function Core.RunDatabaseMigrations()
     ]])
     print('^5[LUXURY-DATABASE]^7 Tablas e interiores de ^3jg-advancedgarages v4^7 verificadas y listas.')
 
+        -- 5.5) Tablas de compatibilidad para ox_inventory y ESX Legacy (users, licenses, user_licenses)
+    MySQL.query.await([[
+        CREATE TABLE IF NOT EXISTS `users` (
+            `identifier` VARCHAR(60) NOT NULL PRIMARY KEY,
+            `license` VARCHAR(60) DEFAULT NULL,
+            `name` VARCHAR(100) DEFAULT NULL,
+            `money` INT NOT NULL DEFAULT 500,
+            `bank` INT NOT NULL DEFAULT 5000,
+            `group` VARCHAR(50) DEFAULT 'user',
+            `job` VARCHAR(50) DEFAULT 'unemployed',
+            `job_grade` INT DEFAULT 0,
+            `inventory` LONGTEXT DEFAULT NULL,
+            `accounts` LONGTEXT DEFAULT NULL,
+            `skin` LONGTEXT DEFAULT NULL,
+            `position` LONGTEXT DEFAULT NULL,
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            `last_seen` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX `idx_users_job` (`job`),
+            INDEX `idx_users_license` (`license`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ]])
+    pcall(function()
+        MySQL.query.await("ALTER TABLE `users` ADD COLUMN IF NOT EXISTS `inventory` LONGTEXT NULL;")
+        MySQL.query.await("ALTER TABLE `users` ADD COLUMN IF NOT EXISTS `accounts` LONGTEXT NULL;")
+    end)
+    print('^5[LUXURY-DATABASE]^7 Tabla ^3`users`^7 (compatibilidad ESX/ox_inventory) verificada.')
+
+    MySQL.query.await([[
+        CREATE TABLE IF NOT EXISTS `licenses` (
+            `type` VARCHAR(60) NOT NULL PRIMARY KEY,
+            `label` VARCHAR(100) NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ]])
+
+    local defaultLicenses = {
+        { type = 'driver', label = 'Licencia de Conducir' },
+        { type = 'weapon', label = 'Weapon License' },
+        { type = 'dmv', label = 'Permiso de Tráfico (DMV)' },
+        { type = 'drive_bike', label = 'Licencia de Motos' },
+        { type = 'drive_truck', label = 'Licencia de Camiones' },
+        { type = 'hunting', label = 'Licencia de Caza' }
+    }
+    for _, lic in ipairs(defaultLicenses) do
+        pcall(function()
+            MySQL.query.await("INSERT IGNORE INTO `licenses` (`type`, `label`) VALUES (?, ?)", { lic.type, lic.label })
+        end)
+    end
+
+    MySQL.query.await([[
+        CREATE TABLE IF NOT EXISTS `user_licenses` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `type` VARCHAR(60) NOT NULL,
+            `owner` VARCHAR(60) NOT NULL,
+            UNIQUE KEY `uk_user_licenses` (`type`, `owner`),
+            INDEX `idx_lic_owner` (`owner`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ]])
+    print('^5[LUXURY-DATABASE]^7 Tablas ^3`licenses`^7 y ^3`user_licenses`^7 verificadas.')
+
     -- 6) Tabla legacy ESX owned_vehicles para compatibilidad con scripts ESX clásicos
     MySQL.query.await([[
         CREATE TABLE IF NOT EXISTS `owned_vehicles` (

@@ -355,3 +355,45 @@ CREATE TABLE IF NOT EXISTS `owned_vehicles` (
   PRIMARY KEY (`plate`),
   KEY `idx_owned_owner` (`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 11. Tabla de Usuarios ESX y Compatibilidad ox_inventory
+CREATE TABLE IF NOT EXISTS `users` (
+  `identifier` VARCHAR(60) NOT NULL PRIMARY KEY,
+  `license` VARCHAR(60) DEFAULT NULL,
+  `name` VARCHAR(100) DEFAULT NULL,
+  `money` INT NOT NULL DEFAULT 500,
+  `bank` INT NOT NULL DEFAULT 5000,
+  `group` VARCHAR(50) DEFAULT 'user',
+  `job` VARCHAR(50) DEFAULT 'unemployed',
+  `job_grade` INT DEFAULT 0,
+  `inventory` LONGTEXT DEFAULT NULL,
+  `accounts` LONGTEXT DEFAULT NULL,
+  `skin` LONGTEXT DEFAULT NULL,
+  `position` LONGTEXT DEFAULT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `last_seen` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX `idx_users_job` (`job`),
+  INDEX `idx_users_license` (`license`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 12. Tablas de Licencias ESX (licenses & user_licenses)
+CREATE TABLE IF NOT EXISTS `licenses` (
+  `type` VARCHAR(60) NOT NULL PRIMARY KEY,
+  `label` VARCHAR(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT IGNORE INTO `licenses` (`type`, `label`) VALUES
+  ('driver', 'Licencia de Conducir'),
+  ('weapon', 'Weapon License'),
+  ('dmv', 'Permiso de Tráfico (DMV)'),
+  ('drive_bike', 'Licencia de Motos'),
+  ('drive_truck', 'Licencia de Camiones'),
+  ('hunting', 'Licencia de Caza');
+
+CREATE TABLE IF NOT EXISTS `user_licenses` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `type` VARCHAR(60) NOT NULL,
+  `owner` VARCHAR(60) NOT NULL,
+  UNIQUE KEY `uk_user_licenses` (`type`, `owner`),
+  INDEX `idx_lic_owner` (`owner`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
